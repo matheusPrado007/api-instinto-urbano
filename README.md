@@ -285,28 +285,6 @@ Aqui você encontrará orientações e dicas que ajudarão muito no desenvolvime
 
 </details>
 
-<details id='sequelize'>
-  <summary><strong>🎲 Sequelize</strong></summary>
-  <br/>
-
-  Para o desenvolvimento, o time de produto disponibilizou um *Diagrama de Entidade-Relacionamento (DER)* para construir a modelagem do banco de dados. Com essa imagem você já consegue saber:
-  - Como nomear suas tabelas e colunas;
-  - Quais são os tipos de suas colunas;
-  - Relações entre tabelas.
-
-    ![Exemplo banco de dados](assets/diagrama-er.png)
-
-  ⚠️ O `package.json` do diretório `app/backend` contém um script `db:reset` que é responsável por "dropar" o banco, recriar e executar as _migrations_ e _seeders_. Você pode executá-lo com o commando `npm run db:reset` se por algum motivo precisar recriar a base de dados;
-
-  ⚠️ Já existem _seeders_ prontas em `app/backend/src/database/seeders`. Você também pode usá-las como referência para criar suas _migrations_ de acordo com os campos e tabelas que as _seeders_ irão popular.  Assim que criar uma _migration_ você deve renomear a _seeder_ correspondente retirando o underline (`_`) ao fim dela, assim o script `db:reset` vai usá-la nos testes e você se certificará se sua _migration_ funcionou como o esperado.
-
-  ⚠️ Quaisquer execução referente ao sequelize-cli deve ser realizada dentro do diretório `app/backend`. Certifique-se de que antes de rodar comandos do sequelize já exista uma versão compilada do back-end (diretório `app/build`), caso contrário basta executar `npm run build` para compilar. O sequelize só funcionará corretamente se o projeto estiver compilado.
-
-  ⚠️ **O sequelize já foi inicializado, portanto NÃO é necessário executar o `sequelize init` novamente**
-
-</details>
-
-
 <details id='testes-de-cobertura'>
   <summary><strong> Testes de cobertura </strong></summary><br/>
 
