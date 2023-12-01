@@ -1,10 +1,7 @@
-import { ArteType } from "../types/ArteType";
-
-import mongoose from "mongoose";
-
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const arteSchema = new Schema<ArteType>({
+const PictureSchema = new Schema({
   nome_artista: { type: String, required: true },
   nome: { type: String, required: true },
   foto: { type: String, required: true },
@@ -14,4 +11,4 @@ const arteSchema = new Schema<ArteType>({
   endereco: { type: String, required: true },
 });
 
-export default mongoose.model("Arte", arteSchema);
+module.exports = mongoose.model("Picture", PictureSchema);
