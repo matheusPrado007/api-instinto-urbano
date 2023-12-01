@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const PictureSchema = new Schema({
+const ArteSchema = new Schema({
   nome_artista: { type: String, required: true },
   nome: { type: String, required: true },
   foto: { type: String, required: true },
@@ -11,4 +11,4 @@ const PictureSchema = new Schema({
   endereco: { type: String, required: true },
 });
 
-module.exports = mongoose.model("Picture", PictureSchema);
+module.exports = mongoose.model("Arte", ArteSchema);

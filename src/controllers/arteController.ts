@@ -1,15 +1,16 @@
-import fs from "fs";
-import Arte from "../models/Arte";
+const fs = require("fs");
+const Arte = require("../models/Arte");
 
-export const create = async (req: any, res: any) => {
+exports.create = async (req: any, res: any) => {
   try {
     const { nome_artista, nome, uf, cidade, descricao, endereco } = req.body;
     const file = req.file.firebaseUrl;
+
     console.log(file);
-    console.log(nome_artista, nome, uf, cidade, descricao, endereco);
     if (!file) {
       return res.status(400).json({ message: "Nenhuma imagem foi enviada." });
     }
+
     const arte = new Arte({
       nome_artista,
       nome,
@@ -19,11 +20,8 @@ export const create = async (req: any, res: any) => {
       cidade,
       endereco,
     });
-    console.log(arte);
+
     await arte.save();
-    
-    console.log(arte);
-    
     res.status(201).json(arte);
   } catch (err) {
     console.error("Erro ao salvar a imagem:", err);
@@ -31,7 +29,7 @@ export const create = async (req: any, res: any) => {
   }
 };
 
-export const remove = async (req: any, res: any) => {
+exports.remove = async (req: any, res: any) => {
   try {
     const arte = await Arte.findById(req.params.id);
     if (!arte) {
@@ -45,12 +43,11 @@ export const remove = async (req: any, res: any) => {
   }
 };
 
-export const findAll = async (req: any, res: any) => {
+exports.findAll = async (req: any, res: any) => {
   try {
-    const arte = await Arte.find();    
+    const arte = await Arte.find();
     res.json(arte);
   } catch (err) {
     res.status(500).json({ message: "Erro ao buscar as imagens." });
   }
 };
-

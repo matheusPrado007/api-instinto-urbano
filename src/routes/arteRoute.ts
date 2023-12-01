@@ -4,7 +4,7 @@ const uploadMiddleware = require("../uploadMiddleware");
 const arteController = require("../controllers/arteController");
 
 // Rota de upload de imagem
-router.post("/", uploadMiddleware.upload.single("file"), uploadMiddleware.uploadToStorage, arteController.create);
+router.post("/create", uploadMiddleware.upload.single("file"), uploadMiddleware.uploadToStorage, arteController.create);
 
 router.get("/", arteController.findAll);
 
