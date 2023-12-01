@@ -1,11 +1,13 @@
-import express from 'express';
-import { create, findAll, remove } from '../controllers/arteController';
-import{  uploadToStorage, upload }from '../uploadMiddleware'
-
+const express = require("express");
 const router = express.Router();
+const uploadMiddleware = require("../uploadMiddleware");
+const arteController = require("../controllers/arteController");
 
-router.post('/create', upload.single('file'), uploadToStorage, create);
-router.get('/', findAll);
-router.delete('/:id', remove);
+// Rota de upload de imagem
+router.post("/", uploadMiddleware.upload.single("file"), uploadMiddleware.uploadToStorage, arteController.create);
 
-export default router;
+router.get("/", arteController.findAll);
+
+router.delete("/:id", arteController.remove);
+
+module.exports = router;
