@@ -1,8 +1,9 @@
-import multer from "multer";
-import { v4 as uuidv4 } from "uuid";
-import bucket from "./firebase";
+const multer = require("multer");
+const { v4: uuidv4 } = require("uuid");
+const buckt = require("./firebase");
 
 const storage = multer.memoryStorage();
+
 const upload = multer({
   storage: storage,
   limits: {
@@ -23,25 +24,29 @@ const uploadToStorage = (req: any, res: any, next: any) => {
   if (!req.file) {
     return res.status(400).json({ error: "Nenhuma imagem foi enviada." });
   }
+
   const imagem = req.file;
   const nomeArquivo = `${uuidv4()}.jpg`;
-  const file = bucket.file(nomeArquivo);
+
+  const file = buckt.file(nomeArquivo);
   const stream = file.createWriteStream({
     metadata: {
       contentType: imagem.mimetype,
     },
   });
-  stream.on("error", (e) => {
+
+  stream.on("error", (e: any) => {
     console.log(e);
     next(e);
   });
+
   stream.on("finish", async () => {
     await file.makePublic();
-    req.file.firebaseUrl = `https://storage.googleapis.com/${bucket.name}/${nomeArquivo}`;
+    req.file.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeArquivo}`;
     next();
   });
+
   stream.end(imagem.buffer);
 };
 
-export { upload, uploadToStorage };
-
+module.exports = { upload, uploadToStorage };
