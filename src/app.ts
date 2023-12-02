@@ -4,12 +4,14 @@ const app = expres();
 require("./db");
 
 const routes = require("./routes/arteRoute");
+const routesUser = require("./routes//userRoute");
 require("dotenv").config();
 
 
 app.use(cors({origin: '*'}));
 
 app.use("/upload", routes);
+app.use("/upload", routesUser);
 
 
 const port = process.env.PORT || 3333;

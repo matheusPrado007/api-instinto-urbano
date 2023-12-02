@@ -4,7 +4,7 @@ const Arte = require("../models/Arte");
 exports.create = async (req: any, res: any) => {
   try {
     const { nome_artista, nome, uf, cidade, descricao, endereco } = req.body;
-    const file = req.file.firebaseUrl;
+    const file = req.file;
 
     console.log(file);
     if (!file) {
@@ -14,7 +14,7 @@ exports.create = async (req: any, res: any) => {
     const arte = new Arte({
       nome_artista,
       nome,
-      foto: file,
+      foto: file.originalname,
       descricao,
       uf,
       cidade,

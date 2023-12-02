@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const uploadMiddleware = require("../uploadMiddleware");
+const uploadMiddlewareArte = require("../uploadMiddleware");
 const arteController = require("../controllers/arteController");
 
 // Rota de upload de imagem
-router.post("/create", uploadMiddleware.upload.single("file"), uploadMiddleware.uploadToStorage, arteController.create);
+router.post("/createArte", uploadMiddlewareArte.singleUpload, uploadMiddlewareArte.uploadToStorage, arteController.create);
 
 router.get("/", arteController.findAll);
 
