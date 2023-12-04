@@ -29,7 +29,6 @@ exports.create = async (req: any, res: any) => {
 };
 
 
-
 exports.remove = async (req: any, res: any) => {
   try {
     const user = await User.findById(req.params.id);
@@ -37,16 +36,13 @@ exports.remove = async (req: any, res: any) => {
       return res.status(404).json({ message: "Usuário não encontrado" });
     }
 
-    // Adicione o nome do arquivo ao req.body
-    req.body.nomeDoArquivoPerfil = user.foto_perfil;
-    req.body.nomeDoArquivoCapa = user.foto_capa;
-
     // Chame o middleware para remover os arquivos do Firebase Storage
-    await firebase.removeFromStorage(req, res, async () => {
-      // Remova o usuário do banco de dados
-      await user.remove();
-      res.json({ message: "Usuário removido com sucesso" });
-    });
+    await firebase.deleteFromStorage(user.foto_perfil);
+    await firebase.deleteFromStorage(user.foto_capa);
+
+    // Remova o usuário do banco de dados
+    await user.remove();
+    res.json({ message: "Usuário removido com sucesso" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Erro ao remover o usuário" });

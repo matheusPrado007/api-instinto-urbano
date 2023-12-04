@@ -4,7 +4,7 @@ const app = expres();
 require("./db");
 
 const routes = require("./routes/arteRoute");
-const routesUser = require("./routes//userRoute");
+const routesUser = require("./routes/userRoute");
 require("dotenv").config();
 
 
