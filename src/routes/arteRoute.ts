@@ -8,6 +8,6 @@ router.post("/createArte", uploadMiddlewareArte.singleUpload, uploadMiddlewareAr
 
 router.get("/", arteController.findAll);
 
-router.delete("/:id", arteController.remove);
+router.delete("/arte/:id", arteController.remove);
 
 module.exports = router;

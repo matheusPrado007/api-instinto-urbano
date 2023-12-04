@@ -37,6 +37,7 @@ const multipleUpload = multer({
 }).array('imagens', 2);  // 'imagens' é o nome do campo que contém as imagens no formulário
 
 // Middleware para fazer o upload do arquivo para o Firebase Storage
+// Middleware para fazer o upload do arquivo para o Firebase Storage
 const uploadToStorage = (req: any, res: any, next: any) => {
   let files;
 
@@ -69,13 +70,37 @@ const uploadToStorage = (req: any, res: any, next: any) => {
     stream.on("finish", async () => {
       await file.makePublic();
       imagem.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeArquivo}`;
-      // Você pode salvar as URLs ou processar as imagens de alguma forma aqui
+
+      // Adiciona o nome do arquivo ao req.body
+      req.body.nomeDoArquivoFirebase = nomeArquivo;
+
+      // Chama a próxima função/middleware
+      next();
     });
 
     stream.end(imagem.buffer);
   });
-
-  next();
 };
 
-module.exports = { singleUpload, multipleUpload, uploadToStorage };
+
+
+const deleteFromStorage = async (nomeArquivo: any) => {
+  try {
+    const file = buckt.file(nomeArquivo);
+
+    // Verifica se o arquivo existe antes de tentar excluir
+    const [exists] = await file.exists();
+    if (exists) {
+      await file.delete();
+      console.log(`Arquivo ${nomeArquivo} excluído do Firebase Storage`);
+    } else {
+      console.log(`Arquivo ${nomeArquivo} não encontrado no Firebase Storage`);
+    }
+  } catch (error) {
+    console.error(`Erro ao excluir o arquivo ${nomeArquivo} do Firebase Storage:`, error);
+    throw error;
+  }
+};
+
+
+module.exports = { singleUpload, multipleUpload, uploadToStorage, deleteFromStorage };
