@@ -3,7 +3,7 @@ const User = require("../models/User");
 
 exports.create = async (req: any, res: any) => {
   try {
-    const { username, email, senha } = req.body;
+    const { username, email, senha, descricao_perfil } = req.body;
     const fotos = req.files.find((file: any) => file.fieldname === 'imagens');
     console.log("fotos: ", fotos);
     
@@ -21,6 +21,7 @@ exports.create = async (req: any, res: any) => {
       username,
       email,
       senha,
+      descricao_perfil,
       foto_perfil: req.files[0].originalname,
       foto_capa: req.files[1].originalname,
     });
