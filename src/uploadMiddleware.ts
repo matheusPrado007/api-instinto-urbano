@@ -38,49 +38,56 @@ const multipleUpload = multer({
 
 // Middleware para fazer o upload do arquivo para o Firebase Storage
 // Middleware para fazer o upload do arquivo para o Firebase Storage
+// Middleware para fazer o upload de arquivos para o Firebase Storage
 const uploadToStorage = (req: any, res: any, next: any) => {
-  let files;
+  try {
+    let files;
 
-  if (req.file) {
-    // Caso seja um único arquivo
-    files = [req.file];
-  } else if (req.files && req.files.length > 0) {
-    // Caso sejam múltiplos arquivos
-    files = req.files;
-  } else {
-    return res.status(400).json({ error: "Nenhuma imagem foi enviada." });
+    if (req.files && req.files.length > 0) {
+      // Caso sejam múltiplos arquivos
+      files = req.files;
+    } else {
+      return res.status(400).json({ error: "Nenhuma imagem foi enviada." });
+    }
+
+    // Adicionar os nomes gerados ao req.body
+    req.body.nomeArquivoPerfil = `${uuidv4()}.jpg`;
+    req.body.nomeArquivoCapa = `${uuidv4()}.jpg`;
+
+    // Iterar sobre os arquivos
+    files.forEach((imagem: any, index: any) => {
+      const nomeArquivo = index === 0 ? req.body.nomeArquivoPerfil : req.body.nomeArquivoCapa;
+
+      const file = buckt.file(nomeArquivo);
+      const stream = file.createWriteStream({
+        metadata: {
+          contentType: imagem.mimetype,
+        },
+      });
+
+      stream.on("error", (e: any) => {
+        console.log(e);
+        next(e);
+      });
+
+      stream.on("finish", async () => {
+        await file.makePublic();
+        imagem.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeArquivo}`;
+        // Você pode salvar as URLs ou processar as imagens de alguma forma aqui
+      });
+
+      stream.end(imagem.buffer);
+    });
+
+    next();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Erro ao fazer upload das imagens para o Firebase Storage" });
   }
-
-  // Iterar sobre os arquivos
-  files.forEach((imagem: any) => {
-    const nomeArquivo = `${uuidv4()}.jpg`;
-
-    const file = buckt.file(nomeArquivo);
-    const stream = file.createWriteStream({
-      metadata: {
-        contentType: imagem.mimetype,
-      },
-    });
-
-    stream.on("error", (e: any) => {
-      console.log(e);
-      next(e);
-    });
-
-    stream.on("finish", async () => {
-      await file.makePublic();
-      imagem.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeArquivo}`;
-
-      // Adiciona o nome do arquivo ao req.body
-      req.body.nomeDoArquivoFirebase = nomeArquivo;
-
-      // Chama a próxima função/middleware
-      next();
-    });
-
-    stream.end(imagem.buffer);
-  });
 };
+
+module.exports = { uploadToStorage };
+
 
 
 

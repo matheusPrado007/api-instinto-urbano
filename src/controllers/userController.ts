@@ -1,20 +1,14 @@
 const fsUser = require("fs");
 const User = require("../models/User");
+const firebase = require("../uploadMiddleware"); 
+
 
 exports.create = async (req: any, res: any) => {
   try {
-    const { username, email, senha, descricao_perfil } = req.body;
-    const fotos = req.files.find((file: any) => file.fieldname === 'imagens');
-    console.log("fotos: ", fotos);
-    
-    console.log('req.body:', req.body);
-    console.log('req.files:', req.files);
+    const { username, email, senha, descricao_perfil, nomeArquivoPerfil, nomeArquivoCapa } = req.body;
 
-    console.log('req.files.originalname:', req.files[0].firebaseUrl);
-
-
-    if (!fotos) {
-      return res.status(400).json({ message: "Ambas as imagens de perfil e capa são necessárias." });
+    if (!nomeArquivoPerfil || !nomeArquivoCapa) {
+      return res.status(400).json({ message: "Nomes dos arquivos não fornecidos." });
     }
 
     const user = new User({
@@ -22,8 +16,8 @@ exports.create = async (req: any, res: any) => {
       email,
       senha,
       descricao_perfil,
-      foto_perfil: req.files[0].originalname,
-      foto_capa: req.files[1].originalname,
+      foto_perfil: nomeArquivoPerfil,
+      foto_capa: nomeArquivoCapa,
     });
 
     await user.save();
@@ -34,20 +28,31 @@ exports.create = async (req: any, res: any) => {
   }
 };
 
+
+
 exports.remove = async (req: any, res: any) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ message: "Usuário não encontrado" });
     }
-    fsUser.unlinkSync(user.foto_perfil);
-    fsUser.unlinkSync(user.foto_capa);
-    await user.remove();
-    res.json({ message: "Usuário removido com sucesso" });
+
+    // Adicione o nome do arquivo ao req.body
+    req.body.nomeDoArquivoPerfil = user.foto_perfil;
+    req.body.nomeDoArquivoCapa = user.foto_capa;
+
+    // Chame o middleware para remover os arquivos do Firebase Storage
+    await firebase.removeFromStorage(req, res, async () => {
+      // Remova o usuário do banco de dados
+      await user.remove();
+      res.json({ message: "Usuário removido com sucesso" });
+    });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Erro ao remover o usuário" });
   }
 };
+
 
 exports.findAll = async (req: any, res: any) => {
   try {
