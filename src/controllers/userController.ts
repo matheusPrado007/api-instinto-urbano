@@ -29,6 +29,46 @@ exports.create = async (req: any, res: any) => {
 };
 
 
+exports.update = async (req: any, res: any) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "Usuário não encontrado" });
+    }
+
+    if (req.body.nomeArquivoPerfil !== undefined) {
+      await firebase.deleteFromStorage(user.foto_perfil);
+      user.foto_perfil = req.body.nomeArquivoPerfil;
+    }
+
+    if (req.body.nomeArquivoCapa !== undefined) {
+      await firebase.deleteFromStorage(user.foto_capa);
+      user.foto_capa = req.body.nomeArquivoCapa;
+    }
+
+    // Atualize apenas os campos fornecidos na requisição
+    const camposAtualizados = ['username', 'email', 'senha', 'descricao_perfil'];
+
+    camposAtualizados.forEach((campo) => {
+      if (req.body[campo] !== undefined) {
+        user[campo] = req.body[campo];
+      }
+    });
+
+    // Salve as alterações
+    await user.save();
+
+    res.json({ message: "Usuário atualizado com sucesso" });
+  } catch (err) {
+    console.error("Erro ao atualizar o usuário:", err);
+    res.status(500).json({ message: "Erro ao atualizar o usuário" });
+  }
+};
+
+
+
 exports.remove = async (req: any, res: any) => {
   try {
     const user = await User.findById(req.params.id);

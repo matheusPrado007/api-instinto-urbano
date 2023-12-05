@@ -161,6 +161,51 @@ const updateToStorage = (req: any, res: any, next: any) => {
 };
 
 
+const updateToStorageMultiple = async (req: any, res: any, next: any) => {
+  try {
+    let files;
+
+    if (!req.files || req.files.length === 0) {
+      console.log(req.files);
+
+     return next();
+    }
+
+
+    files = req.files;
+
+    files.forEach((imagem: any, index: any) => {
+      const nomeArquivo = index === 0 ? req.body.nomeArquivoPerfil = `${uuidv4()}.jpg` : req.body.nomeArquivoCapa = `${uuidv4()}.jpg`;
+
+      const file = buckt.file(nomeArquivo);
+      const stream = file.createWriteStream({
+        metadata: {
+          contentType: imagem.mimetype,
+        },
+      });
+
+      stream.on("error", (e: any) => {
+        console.log(e);
+        next(e);
+      });
+
+      stream.on("finish", async () => {
+        await file.makePublic();
+        imagem.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeArquivo}`;
+
+      });
+
+      stream.end(imagem.buffer);
+    });
+
+    next();
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Erro ao fazer upload das imagens para o Firebase Storage" });
+  }
+};
+
+
 
 //Delete
 
@@ -182,4 +227,9 @@ const deleteFromStorage = async (nomeArquivo: any) => {
 };
 
 
-module.exports = { singleUpload, multipleUpload, uploadToStorage, deleteFromStorage, uploadToStorageMultiple, updateToStorage };
+module.exports = {
+  singleUpload, multipleUpload,
+  uploadToStorage, deleteFromStorage,
+  uploadToStorageMultiple, updateToStorage,
+  updateToStorageMultiple
+};

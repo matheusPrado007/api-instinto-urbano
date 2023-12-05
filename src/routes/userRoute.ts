@@ -8,6 +8,8 @@ routerUser.post("/createUser", uploadMiddleware.multipleUpload, uploadMiddleware
 
 routerUser.get("/users", UserController.findAll);
 
+routerUser.put("/updateUser/:id", uploadMiddleware.multipleUpload, uploadMiddleware.updateToStorageMultiple, UserController.update);
+
 routerUser.delete("/user/:id", UserController.remove);
 
 module.exports = routerUser;
