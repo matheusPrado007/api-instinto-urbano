@@ -41,7 +41,7 @@ const uploadToStorage = (req: any, res: any, next: any) => {
     let files;
 
     if (!req.file) {
-      return res.status(400).json({ error: "Nenhuma imagem foi enviada." });
+      return next()
     }
 
     const imagem = req.file;

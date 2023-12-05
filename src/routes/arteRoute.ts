@@ -8,9 +8,9 @@ router.post("/createArte", uploadMiddlewareArte.singleUpload, uploadMiddlewareAr
 
 router.get("/artes", arteController.findAll);
 
-router.put("/update/:id", uploadMiddlewareArte.singleUpload, uploadMiddlewareArte.updateToStorage, arteController.update);
+router.put("/updateArte/:id", uploadMiddlewareArte.singleUpload, uploadMiddlewareArte.updateToStorage, arteController.update);
 
 
-router.delete("/arte/:id", arteController.remove);
+router.delete("/deletearte/:id", arteController.remove);
 
 module.exports = router;

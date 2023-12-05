@@ -7,7 +7,6 @@ exports.create = async (req: any, res: any) => {
     const { nome_artista, nome, uf, cidade, descricao, endereco } = req.body;
     const nomeDoArquivoFirebase = req.body.nomeFoto;
 
-    console.log(nomeDoArquivoFirebase);
     if (!nomeDoArquivoFirebase) {
       return res.status(400).json({ message: "Nenhuma imagem foi enviada. CONTRL" });
     }
