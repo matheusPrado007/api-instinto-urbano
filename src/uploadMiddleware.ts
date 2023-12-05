@@ -1,33 +1,33 @@
 const multer = require("multer");
 const { v4: uuidv4 } = require("uuid");
 const buckt = require("./firebase");
-
 const storage = multer.memoryStorage();
 
-// Configuração para permitir o upload de uma única imagem
+//create
+
 const singleUpload = multer({
   storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // Tamanho máximo do arquivo em bytes (neste exemplo, 5 MB)
+    fileSize: 5 * 1024 * 1024,
   },
   fileFilter: (req: any, file: any, cb: any) => {
-    // Verifica se o arquivo é uma imagem (opcional)
+
     if (file.mimetype.startsWith("image/")) {
       cb(null, true);
     } else {
       cb(new Error("O arquivo enviado não é uma imagem."));
     }
   },
-}).single('imagem');  // 'imagem' é o nome do campo que contém a imagem no formulário
+}).single('imagem');
 
-// Configuração para permitir o upload de várias imagens
+
 const multipleUpload = multer({
   storage: storage,
   limits: {
-    fileSize: 5 * 1024 * 1024, // Tamanho máximo do arquivo em bytes (neste exemplo, 5 MB)
+    fileSize: 5 * 1024 * 1024,
   },
   fileFilter: (req: any, file: any, cb: any) => {
-    // Verifica se o arquivo é uma imagem (opcional)
+
     if (file.mimetype.startsWith("image/")) {
       cb(null, true);
     } else {
@@ -44,7 +44,7 @@ const uploadToStorage = (req: any, res: any, next: any) => {
       return res.status(400).json({ error: "Nenhuma imagem foi enviada." });
     }
 
-    const imagem = req.file; // Alterei de files para file, já que você está usando singleUpload
+    const imagem = req.file;
 
     const nomeFoto = `${uuidv4()}.jpg`;
     req.body.nomeFoto = nomeFoto;
@@ -64,7 +64,7 @@ const uploadToStorage = (req: any, res: any, next: any) => {
     stream.on("finish", async () => {
       await file.makePublic();
       imagem.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeFoto}`;
-      // Você pode salvar as URLs ou processar as imagens de alguma forma aqui
+
       next();
     });
 
@@ -106,7 +106,7 @@ const uploadToStorageMultiple = (req: any, res: any, next: any) => {
       stream.on("finish", async () => {
         await file.makePublic();
         imagem.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeArquivo}`;
-        // Você pode salvar as URLs ou processar as imagens de alguma forma aqui
+
       });
 
       stream.end(imagem.buffer);
@@ -119,12 +119,55 @@ const uploadToStorageMultiple = (req: any, res: any, next: any) => {
   }
 };
 
+// Update
+
+const updateToStorage = (req: any, res: any, next: any) => {
+  try {
+    // Verifica se há uma imagem no corpo da requisição
+    if (!req.file) {
+      // Se não houver imagem, passe para o próximo middleware
+      return next();
+    }
+
+    const imagem = req.file;
+
+    const nomeFoto = `${uuidv4()}.jpg`;
+    req.body.nomeFoto = nomeFoto;
+
+    const file = buckt.file(nomeFoto);
+    const stream = file.createWriteStream({
+      metadata: {
+        contentType: imagem.mimetype,
+      },
+    });
+
+    stream.on("error", (e: any) => {
+      console.log(e);
+      next(e);
+    });
+
+    stream.on("finish", async () => {
+      await file.makePublic();
+      imagem.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeFoto}`;
+
+      next();
+    });
+
+    stream.end(imagem.buffer);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Erro ao fazer upload da imagem para o Firebase Storage" });
+  }
+};
+
+
+
+//Delete
 
 const deleteFromStorage = async (nomeArquivo: any) => {
   try {
     const file = buckt.file(nomeArquivo);
 
-    // Verifica se o arquivo existe antes de tentar excluir
     const [exists] = await file.exists();
     if (exists) {
       await file.delete();
@@ -139,4 +182,4 @@ const deleteFromStorage = async (nomeArquivo: any) => {
 };
 
 
-module.exports = { singleUpload, multipleUpload, uploadToStorage, deleteFromStorage, uploadToStorageMultiple };
+module.exports = { singleUpload, multipleUpload, uploadToStorage, deleteFromStorage, uploadToStorageMultiple, updateToStorage };

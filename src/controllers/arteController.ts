@@ -30,7 +30,40 @@ exports.create = async (req: any, res: any) => {
   }
 };
 
-;
+exports.update = async (req: any , res: any) => {
+  try {
+    const arteId = req.params.id;
+    const arte = await Arte.findById(arteId);
+
+    if (!arte) {
+      return res.status(404).json({ message: "Imagem não encontrada" });
+    }
+
+    // Atualize os campos da arte com base nos campos fornecidos
+    if (req.body.nomeFoto) {
+      // Se um novo arquivo for fornecido, exclua a imagem antiga do Firebase Storage
+      await storageFirebase.deleteFromStorage(arte.foto);
+      arte.foto = req.body.nomeFoto;
+      res.json({ message: "Imagem atualizada com sucesso" });
+    }
+
+    const camposAtualizados = ["nome_artista", "nome", "uf", "cidade", "descricao", "endereco"];
+
+    camposAtualizados.forEach((campo) => {
+      if (req.body[campo]) {
+        arte[campo] = req.body[campo];
+      }
+    });
+
+    // Salve as alterações
+    await arte.save();
+
+    res.json({ message: "Update realizado" });
+  } catch (err) {
+    console.error("Erro ao atualizar a imagem:", err);
+    res.status(500).json({ message: "Erro ao atualizar a imagem" });
+  }
+};
 
 exports.remove = async (req: any, res: any) => {
   try {
