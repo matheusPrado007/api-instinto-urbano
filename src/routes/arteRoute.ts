@@ -8,7 +8,7 @@ router.post("/createArte", uploadMiddlewareArte.singleUpload, uploadMiddlewareAr
 
 router.get("/artes", arteController.findAll);
 
-router.put("/updateArte/:id", uploadMiddlewareArte.singleUpload, uploadMiddlewareArte.updateToStorage, arteController.update);
+router.put("/updatearte/:id", uploadMiddlewareArte.singleUpload, uploadMiddlewareArte.updateToStorage, arteController.update);
 
 
 router.delete("/deletearte/:id", arteController.remove);
