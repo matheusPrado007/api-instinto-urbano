@@ -4,11 +4,11 @@ const uploadMiddleware = require("../uploadMiddleware");
 const UserController = require("../controllers/userController");
 
 // Rota de upload de imagem
-routerUser.post("/createUser", uploadMiddleware.multipleUpload, uploadMiddleware.uploadToStorageMultiple, UserController.create);
+routerUser.post("/createUser", uploadMiddleware.multipleUploadStorage, uploadMiddleware.updateToStorageMultiple, UserController.create);
 
 routerUser.get("/users", UserController.findAll);
 
-routerUser.put("/updateUser/:id", uploadMiddleware.multipleUpload, uploadMiddleware.updateToStorageMultiple, UserController.update);
+routerUser.put("/updateUser/:id", uploadMiddleware.multipleUploadStorage, uploadMiddleware.updateToStorageMultiple, UserController.update);
 
 routerUser.delete("/user/:id", UserController.remove);
 

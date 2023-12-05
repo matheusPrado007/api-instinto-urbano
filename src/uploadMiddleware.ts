@@ -161,42 +161,87 @@ const updateToStorage = (req: any, res: any, next: any) => {
 };
 
 
+/////////
+const multipleUploadStorage = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+  fileFilter: (req: any, file: any, cb: any) => {
+    if (file.mimetype.startsWith("image/")) {
+      cb(null, true);
+    } else {
+      cb(new Error("O arquivo enviado não é uma imagem."));
+    }
+  },
+}).fields([
+  { name: 'foto_perfil', maxCount: 1 },
+  { name: 'foto_capa', maxCount: 1 },
+]);
+
+
+
 const updateToStorageMultiple = async (req: any, res: any, next: any) => {
   try {
-    let files;
-
     if (!req.files || req.files.length === 0) {
-      console.log(req.files);
-
-     return next();
+      return next();
     }
 
+    const files = req.files;
 
-    files = req.files;
+    // Verifique e processe foto_perfil
+    if (files['foto_perfil']) {
+      const imagemPerfil = files['foto_perfil'][0];
+      const nomeArquivoPerfil = `${uuidv4()}.jpg`;
 
-    files.forEach((imagem: any, index: any) => {
-      const nomeArquivo = index === 0 ? req.body.nomeArquivoPerfil = `${uuidv4()}.jpg` : req.body.nomeArquivoCapa = `${uuidv4()}.jpg`;
+      req.body.nomeArquivoPerfil = nomeArquivoPerfil;
 
-      const file = buckt.file(nomeArquivo);
-      const stream = file.createWriteStream({
+      const filePerfil = buckt.file(nomeArquivoPerfil);
+      const streamPerfil = filePerfil.createWriteStream({
         metadata: {
-          contentType: imagem.mimetype,
+          contentType: imagemPerfil.mimetype,
         },
       });
 
-      stream.on("error", (e: any) => {
+      streamPerfil.on("error", (e: any) => {
         console.log(e);
         next(e);
       });
 
-      stream.on("finish", async () => {
-        await file.makePublic();
-        imagem.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeArquivo}`;
-
+      streamPerfil.on("finish", async () => {
+        await filePerfil.makePublic();
+        imagemPerfil.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeArquivoPerfil}`;
       });
 
-      stream.end(imagem.buffer);
-    });
+      streamPerfil.end(imagemPerfil.buffer);
+    }
+
+    // Verifique e processe foto_capa
+    if (files['foto_capa']) {
+      const imagemCapa = files['foto_capa'][0];
+      const nomeArquivoCapa = `${uuidv4()}.jpg`;
+
+      req.body.nomeArquivoCapa = nomeArquivoCapa;
+
+      const fileCapa = buckt.file(nomeArquivoCapa);
+      const streamCapa = fileCapa.createWriteStream({
+        metadata: {
+          contentType: imagemCapa.mimetype,
+        },
+      });
+
+      streamCapa.on("error", (e: any) => {
+        console.log(e);
+        next(e);
+      });
+
+      streamCapa.on("finish", async () => {
+        await fileCapa.makePublic();
+        imagemCapa.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeArquivoCapa}`;
+      });
+
+      streamCapa.end(imagemCapa.buffer);
+    }
 
     next();
   } catch (error) {
@@ -204,6 +249,7 @@ const updateToStorageMultiple = async (req: any, res: any, next: any) => {
     res.status(500).json({ message: "Erro ao fazer upload das imagens para o Firebase Storage" });
   }
 };
+
 
 
 
@@ -231,5 +277,6 @@ module.exports = {
   singleUpload, multipleUpload,
   uploadToStorage, deleteFromStorage,
   uploadToStorageMultiple, updateToStorage,
-  updateToStorageMultiple
+  updateToStorageMultiple,
+  multipleUploadStorage
 };

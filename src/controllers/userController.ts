@@ -29,7 +29,7 @@ exports.create = async (req: any, res: any) => {
 };
 
 
-exports.update = async (req: any, res: any) => {
+exports.update = async (req: any, res: any, next: any) => {
   try {
     const userId = req.params.id;
     const user = await User.findById(userId);
@@ -38,17 +38,25 @@ exports.update = async (req: any, res: any) => {
       return res.status(404).json({ message: "Usuário não encontrado" });
     }
 
-    if (req.body.nomeArquivoPerfil !== undefined) {
-      await firebase.deleteFromStorage(user.foto_perfil);
-      user.foto_perfil = req.body.nomeArquivoPerfil;
+    const files: any = req.files;
+
+    // Itere sobre cada campo no objeto de arquivos
+    if (files) {
+      Object.keys(files).forEach((fieldname: string) => {
+        const imagem = files[fieldname][0];
+
+        // Lógica para processar cada imagem
+        if (fieldname === 'foto_perfil') {
+          firebase.deleteFromStorage(user.foto_perfil);
+          user.foto_perfil = req.body.nomeArquivoPerfil;
+        } else if (fieldname === 'foto_capa') {
+          firebase.deleteFromStorage(user.foto_capa);
+          user.foto_capa = req.body.nomeArquivoCapa;
+        }
+      });
     }
 
-    if (req.body.nomeArquivoCapa !== undefined) {
-      await firebase.deleteFromStorage(user.foto_capa);
-      user.foto_capa = req.body.nomeArquivoCapa;
-    }
-
-    // Atualize apenas os campos fornecidos na requisição
+    // Atualize todos os campos fornecidos na requisição
     const camposAtualizados = ['username', 'email', 'senha', 'descricao_perfil'];
 
     camposAtualizados.forEach((campo) => {
@@ -57,7 +65,6 @@ exports.update = async (req: any, res: any) => {
       }
     });
 
-    // Salve as alterações
     await user.save();
 
     res.json({ message: "Usuário atualizado com sucesso" });
@@ -66,6 +73,7 @@ exports.update = async (req: any, res: any) => {
     res.status(500).json({ message: "Erro ao atualizar o usuário" });
   }
 };
+
 
 
 
