@@ -6,7 +6,7 @@ const arteController = require("../controllers/arteController");
 // Rota de upload de imagem
 router.post("/createArte", uploadMiddlewareArte.singleUpload, uploadMiddlewareArte.uploadToStorage, arteController.create);
 
-router.get("/", arteController.findAll);
+router.get("/artes", arteController.findAll);
 
 router.delete("/arte/:id", arteController.remove);
 
