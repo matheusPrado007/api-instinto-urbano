@@ -34,27 +34,60 @@ const multipleUpload = multer({
       cb(new Error("O arquivo enviado não é uma imagem."));
     }
   },
-}).array('imagens', 2);  // 'imagens' é o nome do campo que contém as imagens no formulário
+}).array('imagens', 2);  // 
 
-// Middleware para fazer o upload do arquivo para o Firebase Storage
-// Middleware para fazer o upload do arquivo para o Firebase Storage
-// Middleware para fazer o upload de arquivos para o Firebase Storage
 const uploadToStorage = (req: any, res: any, next: any) => {
   try {
     let files;
 
-    if (req.files && req.files.length > 0) {
-      // Caso sejam múltiplos arquivos
-      files = req.files;
-    } else {
+    if (!req.file) {
       return res.status(400).json({ error: "Nenhuma imagem foi enviada." });
     }
 
-    // Adicionar os nomes gerados ao req.body
+    const imagem = req.file; // Alterei de files para file, já que você está usando singleUpload
+
+    const nomeFoto = `${uuidv4()}.jpg`;
+    req.body.nomeFoto = nomeFoto;
+
+    const file = buckt.file(nomeFoto);
+    const stream = file.createWriteStream({
+      metadata: {
+        contentType: imagem.mimetype,
+      },
+    });
+
+    stream.on("error", (e: any) => {
+      console.log(e);
+      next(e);
+    });
+
+    stream.on("finish", async () => {
+      await file.makePublic();
+      imagem.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeFoto}`;
+      // Você pode salvar as URLs ou processar as imagens de alguma forma aqui
+      next();
+    });
+
+    stream.end(imagem.buffer);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Erro ao fazer upload da imagem para o Firebase Storage" });
+  }
+};
+
+const uploadToStorageMultiple = (req: any, res: any, next: any) => {
+  try {
+    let files;
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: "Nenhuma imagem foi enviada." });
+    }
+
     req.body.nomeArquivoPerfil = `${uuidv4()}.jpg`;
     req.body.nomeArquivoCapa = `${uuidv4()}.jpg`;
 
-    // Iterar sobre os arquivos
+    files = req.files;
+
     files.forEach((imagem: any, index: any) => {
       const nomeArquivo = index === 0 ? req.body.nomeArquivoPerfil : req.body.nomeArquivoCapa;
 
@@ -86,10 +119,6 @@ const uploadToStorage = (req: any, res: any, next: any) => {
   }
 };
 
-module.exports = { uploadToStorage };
-
-
-
 
 const deleteFromStorage = async (nomeArquivo: any) => {
   try {
@@ -110,4 +139,4 @@ const deleteFromStorage = async (nomeArquivo: any) => {
 };
 
 
-module.exports = { singleUpload, multipleUpload, uploadToStorage, deleteFromStorage };
+module.exports = { singleUpload, multipleUpload, uploadToStorage, deleteFromStorage, uploadToStorageMultiple };

@@ -5,10 +5,11 @@ const storageFirebase = require("../uploadMiddleware");
 exports.create = async (req: any, res: any) => {
   try {
     const { nome_artista, nome, uf, cidade, descricao, endereco } = req.body;
-    const nomeDoArquivoFirebase = req.body.nomeDoArquivoFirebase;
+    const nomeDoArquivoFirebase = req.body.nomeFoto;
+
     console.log(nomeDoArquivoFirebase);
     if (!nomeDoArquivoFirebase) {
-      return res.status(400).json({ message: "Nenhuma imagem foi enviada." });
+      return res.status(400).json({ message: "Nenhuma imagem foi enviada. CONTRL" });
     }
 
     const arte = new Arte({
