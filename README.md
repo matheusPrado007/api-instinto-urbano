@@ -13,25 +13,22 @@ O projeto é composto de 2 entidades importantes para sua estrutura:
 
 1️⃣ **Back-end:**
  - Será o ambiente que você realizará a maior parte das implementações exigidas.
- - Deve rodar na porta `3001`, pois o front-end faz requisições para ele nessa porta por padrão;
+ - Deve rodar na porta `4000`, pois o front-end faz requisições para ele nessa porta por padrão;
  - Sua aplicação deve ser inicializada a partir do arquivo `app/backend/src/server.ts`;
  - Garanta que o `express` é executado e a aplicação ouve a porta que vem das variáveis de ambiente;
  - Todas as dependências extras (tal como `joi`, `boom`, `express-async-errors`...) devem ser listadas em `app/backend/packages.npm`.
  - 
  2️⃣**Banco de dados:**
   - Tem o papel de fornecer dados para o serviço de _backend_.
-  - Durante a execução dos testes sempre vai ser acessado pelo `sequelize` e via porta `3002` do `localhost`;
-  - Você também pode conectar a um Cliente MySQL (Workbench, Beekeeper, DBeaver e etc), colocando as credenciais configuradas no docker-compose no serviço `db`.
-
+  - MongoDB
+  - Mongoose
+  - Durante a execução dos testes sempre vai ser acessado pelo `express` e via porta `4000` do `localhost`;
 </details>
 
 <details>
   <summary><strong> 🗓 Data de Entrega</strong></summary><br />
-
-  * Projeto individual;
   * Serão `4 meses` dias de projeto;
   * Data de entrega: `01/04/2024 14:00`.
-
 </details>
 
 # Orientações
