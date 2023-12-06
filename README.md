@@ -1,7 +1,5 @@
 # Boas vindas ao repositório do Projeto Rastro Urbano!
 
-Aqui você vai encontrar os detalhes de como estruturar o desenvolvimento do seu projeto a partir deste repositório, utilizando uma branch específica e um _Pull Request_ para colocar seus códigos.
-
 # Sobre
  Bem-vindo ao projeto "Rastro Urbano", um backend dinâmico desenvolvido em Node.js e TypeScript para catalogar e explorar a efervescente cena da arte urbana. Com recursos de armazenamento eficiente em banco de dados, interação social e APIs poderosas, nossa plataforma conecta artistas, entusiastas e curadores de forma inovadora.
 
@@ -10,14 +8,42 @@ Aqui você vai encontrar os detalhes de como estruturar o desenvolvimento do seu
 <summary><strong> Estrutura do projeto</strong></summary><br />
 
 O projeto é composto de 2 entidades importantes para sua estrutura:
+## Tecnologias Utilizadas
+1. **cors (^2.8.5):**
+   - Uma middleware do Express para habilitar o controle de acesso HTTP (CORS). Permite que você defina quem pode acessar sua API.
+
+2. **dotenv (^16.0.3):**
+   - Carrega variáveis de ambiente de um arquivo `.env` para o processo do Node.js. É útil para configurar variáveis sensíveis, como chaves de API, sem comprometê-las no controle de versão.
+
+3. **express (4.18.2):**
+   - Um framework web para Node.js que facilita a criação de APIs RESTful. Oferece uma variedade de recursos para roteamento, middleware, manipulação de solicitações e respostas, etc.
+
+4. **firebase-admin (^11.10.1):**
+   - SDK oficial do Firebase para administração do lado do servidor. Pode ser usado para acessar serviços do Firebase, como Firestore, Autenticação, etc., a partir do servidor.
+
+5. **mongoose (^6.8.4):**
+   - Um ODM (Object Data Modeling) para MongoDB e Node.js. Facilita a interação com bancos de dados MongoDB, fornecendo uma camada de abstração sobre as operações do banco de dados.
+
+6. **multer (^1.4.5-lts.1):**
+   - Um middleware do Express para o manuseio de dados de formulário em requisições HTTP, principalmente usado para upload de arquivos.
+
+7. **nodemon (3.0.1):**
+   - Uma ferramenta que ajuda no desenvolvimento reiniciando automaticamente a aplicação Node.js quando alterações nos arquivos são detectadas. Isso é útil para evitar a necessidade de reinicialização manual durante o desenvolvimento.
+
+8. **uuid (9.0.0):**
+   - Gera identificadores únicos universalmente (UUIDs). É útil quando você precisa de identificadores exclusivos para seus modelos ou recursos.
+
+9. **typescript (^5.3.2):**
+   - Uma linguagem superset do JavaScript que adiciona tipagem estática opcional. O TypeScript é transpilado para JavaScript antes da execução, proporcionando benefícios de desenvolvimento mais seguro e ferramentas avançadas de autocompletar e verificação de erros.
+
+Essas são as principais tecnologias e dependências utilizadas no seu projeto. Certifique-se de instalar essas dependências executando `npm install` no diretório do seu projeto para baixar e instalar todas as dependências listadas no arquivo `package.json`.
 
 1️⃣ **Back-end:**
  - Será o ambiente que você realizará a maior parte das implementações exigidas.
  - Deve rodar na porta `4000`, pois o front-end faz requisições para ele nessa porta por padrão;
  - Sua aplicação deve ser inicializada a partir do arquivo `app/backend/src/server.ts`;
  - Garanta que o `express` é executado e a aplicação ouve a porta que vem das variáveis de ambiente;
- - Todas as dependências extras (tal como `joi`, `boom`, `express-async-errors`...) devem ser listadas em `app/backend/packages.npm`.
- - 
+ 
  2️⃣**Banco de dados:**
   - Tem o papel de fornecer dados para o serviço de _backend_.
   - MongoDB
