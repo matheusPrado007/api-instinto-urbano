@@ -9,6 +9,8 @@ require("dotenv").config();
 
 
 app.use(cors({origin: '*'}));
+app.use(expres.json());
+app.use(expres.urlencoded({ extended: true }));
 
 app.use("/upload", routes);
 app.use("/upload", routesUser);

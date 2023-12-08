@@ -1,6 +1,9 @@
 const fsUser = require("fs");
 const User = require("../models/User");
 const firebase = require("../uploadMiddleware"); 
+const bcrypt = require('bcrypt');
+const auth = require('../auth/jwtService');
+
 
 
 exports.create = async (req: any, res: any) => {
@@ -11,14 +14,20 @@ exports.create = async (req: any, res: any) => {
       return res.status(400).json({ message: "Nomes dos arquivos não fornecidos." });
     }
 
+    // Hash da senha antes de salvar no banco de dados
+    const hashedSenha = await bcrypt.hash(senha, 10);
+
     const user = new User({
       username,
       email,
-      senha,
+      senha: hashedSenha,
       descricao_perfil,
       foto_perfil: nomeArquivoPerfil,
       foto_capa: nomeArquivoCapa,
     });
+
+    // Log para depuração
+    console.log('Usuário criado:', user);
 
     await user.save();
     res.status(201).json(user);
@@ -104,5 +113,40 @@ exports.findAll = async (req: any, res: any) => {
     res.json(users);
   } catch (err) {
     res.status(500).json({ message: "Erro ao buscar os usuários." });
+  }
+};
+
+exports.loginPost =  async (req: any, res: any) => {
+  const { email, senha } = req.body;
+console.log(senha);
+
+  try {
+      // Verifique as credenciais do usuário no seu modelo User
+      const user = await User.findOne({ email });
+      console.log(typeof user.senha);
+      
+
+      if (!user) {
+          return res.status(401).json({ message: 'Credenciais inválidas. user' });
+      }
+
+      if (typeof user.senha !== 'string') {
+          return res.status(401).json({ message: 'Credenciais inválidas.' });
+      }
+
+      // Compare a senha fornecida com a senha hash no banco de dados
+      const senhaValida = await bcrypt.compare(senha, user.senha);
+
+      if (!senhaValida) {
+          return res.status(401).json({ message: 'Credenciais inválidas. invalida' });
+      }
+
+      // Gere um token JWT
+      const token = auth.generateToken(user._id);
+
+      res.json({ token });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erro interno do servidor.' });
   }
 };
