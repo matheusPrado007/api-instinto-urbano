@@ -160,6 +160,7 @@ Adicione scripts ao seu `package.json` para facilitar a execução do projeto:
 ```
 
 ### 10. Execução:
+Execução sem uso do Docker:
 
 - Execute `npm run dev` para iniciar o servidor em modo de desenvolvimento.
 - Execute `npm run build` para compilar o código TypeScript para JavaScript.
@@ -167,6 +168,16 @@ Adicione scripts ao seu `package.json` para facilitar a execução do projeto:
 
 Este é um guia básico e simplificado. Dependendo dos requisitos específicos do seu projeto, você pode precisar ajustar e expandir essas etapas. Certifique-se de revisar a documentação das bibliotecas e serviços que está utilizando para uma implementação mais detalhada.
 
+### 11. Docker e docker-compose
+Execução com uso do Docker:
+
+- Com docker-compose up -d, já é realizado a construção de tudo no projeto, incluido o npm run dev
+
+ ` docker-compose up -d `
+
+- Essa execução docker exec -it api-rastro-urbano-app-1 bash é para desenvolver dentro do docker:
+
+`docker exec -it api-rastro-urbano-app-1 bash`
 
 </details>
 
