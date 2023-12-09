@@ -36,6 +36,10 @@ O projeto é composto de 2 entidades importantes para sua estrutura:
 9. **typescript (^5.3.2):**
    - Uma linguagem superset do JavaScript que adiciona tipagem estática opcional. O TypeScript é transpilado para JavaScript antes da execução, proporcionando benefícios de desenvolvimento mais seguro e ferramentas avançadas de autocompletar e verificação de erros.
 
+10. **Docker**
+
+11. **docker-compose:**
+
 Essas são as principais tecnologias e dependências utilizadas no projeto. Certifique-se de instalar essas dependências executando `npm install` no diretório do seu projeto para baixar e instalar todas as dependências listadas no arquivo `package.json`.
 
 1️⃣ **Back-end:**
