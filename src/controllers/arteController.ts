@@ -1,14 +1,14 @@
-const fs = require("fs");
-const Arte = require("../models/Arte");
-const storageFirebase = require("../uploadMiddleware"); 
+import Arte from "../models/Arte";
+import { Request, Response } from 'express';
+import { deleteFromStorage } from "../uploadMiddleware";
 
-exports.create = async (req: any, res: any) => {
+export const create = async (req: Request, res: Response) => {
   try {
     const { nome_artista, nome, uf, cidade, descricao, endereco } = req.body;
     const nomeDoArquivoFirebase = req.body.nomeFoto;
 
     if (!nomeDoArquivoFirebase) {
-      return res.status(400).json({ message: "Nenhuma imagem foi enviada. CONTRL" });
+      return res.status(400).json({ message: "Nenhuma imagem foi enviada." });
     }
 
     const arte = new Arte({
@@ -29,7 +29,47 @@ exports.create = async (req: any, res: any) => {
   }
 };
 
-exports.update = async (req: any , res: any) => {
+export const update = async (req: Request, res: Response) => {
+  try {
+    const arteId = req.params.id;
+    const arte: any = await Arte.findById(arteId);
+    console.log('tipo da arte', typeof arte);
+    
+
+    if (!arte) {
+      return res.status(404).json({ message: "Imagem não encontrada" });
+    }
+
+    if (req.body.nomeFoto) {
+      // Excluir a imagem antiga
+      await deleteFromStorage(arte.foto);
+      arte.foto = req.body.nomeFoto;
+
+      // Salvar as alterações
+      await arte.save();
+
+      return res.json({ message: "Imagem atualizada com sucesso" });
+    }
+
+    const camposAtualizados = ["nome_artista", "nome", "uf", "cidade", "descricao", "endereco"];
+
+    camposAtualizados.forEach((campo) => {
+      if (req.body[campo]) {
+        arte[campo] = req.body[campo];
+      }
+    });
+
+    // Salvar as alterações
+    await arte.save();
+
+    res.json({ message: "Update realizado" });
+  } catch (err) {
+    console.error("Erro ao atualizar a imagem:", err);
+    res.status(500).json({ message: "Erro ao atualizar a imagem" });
+  }
+};
+
+export const remove = async (req: Request, res: Response) => {
   try {
     const arteId = req.params.id;
     const arte = await Arte.findById(arteId);
@@ -38,41 +78,8 @@ exports.update = async (req: any , res: any) => {
       return res.status(404).json({ message: "Imagem não encontrada" });
     }
 
-    // Atualize os campos da arte com base nos campos fornecidos
-    if (req.body.nomeFoto) {
-      await storageFirebase.deleteFromStorage(arte.foto);
-      arte.foto = req.body.nomeFoto;
-      return res.json({ message: "Imagem atualizada com sucesso" });
-    }
-    
-    const camposAtualizados = ["nome_artista", "nome", "uf", "cidade", "descricao", "endereco"];
-    
-    camposAtualizados.forEach((campo) => {
-      if (req.body[campo]) {
-        arte[campo] = req.body[campo];
-      }
-    });
-    
-    // Salve as alterações
-    await arte.save();
-    
-    res.json({ message: "Update realizado" });
-    
-  } catch (err) {
-    console.error("Erro ao atualizar a imagem:", err);
-    res.status(500).json({ message: "Erro ao atualizar a imagem" });
-  }
-};
-
-exports.remove = async (req: any, res: any) => {
-  try {
-    const arte = await Arte.findById(req.params.id);
-    if (!arte) {
-      return res.status(404).json({ message: "Imagem não encontrada" });
-    }
-
     // Excluir a imagem do Firebase Storage
-    await storageFirebase.deleteFromStorage(arte.foto);
+    await deleteFromStorage(arte.foto);
 
     // Remover a arte do banco de dados
     await arte.remove();
@@ -84,8 +91,7 @@ exports.remove = async (req: any, res: any) => {
   }
 };
 
-
-exports.findAll = async (req: any, res: any) => {
+export const findAll = async (req: Request, res: Response) => {
   try {
     const arte = await Arte.find();
     res.json(arte);

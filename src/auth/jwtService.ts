@@ -1,12 +1,11 @@
-// auth/jwtService.js
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
-const generateToken = (userId: any) => {
+const generateToken = (userId: string) => {
   return jwt.sign({ userId }, 'batata123', { expiresIn: '1h' }); // Troque pelo seu segredo
 };
 
-const verifyToken = (token: any) => {
+const verifyToken = (token: string) => {
   return jwt.verify(token, 'batata123'); // Troque pelo seu segredo
 };
 
-module.exports = { generateToken, verifyToken };
+export { generateToken, verifyToken };

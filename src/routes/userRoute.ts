@@ -1,19 +1,18 @@
-const expressUser = require("express");
-const routerUser = expressUser.Router();
-const uploadMiddleware = require("../uploadMiddleware");
-const UserController = require("../controllers/userController");
-const token = require('../middleware/authMiddleware');
-const UserRoute = require('../models/User');
+import express from 'express';
+import { updateToStorageMultiple, multipleUploadStorage } from '../uploadMiddleware';
+import { create, findAll, remove, update, loginPost } from '../controllers/userController';
+import { authenticateToken } from '../middleware/authMiddleware';
 
+const routerUser = express.Router();
 
-routerUser.post('/login', UserController.loginPost);
+routerUser.post('/login', loginPost);
 // Rota de upload de imagem
-routerUser.post("/createUser", uploadMiddleware.multipleUploadStorage, uploadMiddleware.updateToStorageMultiple, UserController.create);
+routerUser.post('/createUser', multipleUploadStorage, updateToStorageMultiple, create);
 
-routerUser.get("/users", token.authenticateToken, UserController.findAll);
+routerUser.get('/users', authenticateToken, findAll);
 
-routerUser.put("/updateUser/:id", uploadMiddleware.multipleUploadStorage, uploadMiddleware.updateToStorageMultiple, UserController.update);
+routerUser.put('/updateUser/:id', multipleUploadStorage, updateToStorageMultiple, update);
 
-routerUser.delete("/user/:id", UserController.remove);
+routerUser.delete('/deleteuser/:id', remove);
 
-module.exports = routerUser;
+export default routerUser;

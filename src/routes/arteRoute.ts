@@ -1,18 +1,17 @@
-const express = require("express");
+import express from 'express';
+import { singleUpload, updateToStorage, uploadToStorage } from '../uploadMiddleware';
+import { create, findAll, remove, update } from '../controllers/arteController';
+import { authenticateToken } from '../middleware/authMiddleware';
+
 const router = express.Router();
-const uploadMiddlewareArte = require("../uploadMiddleware");
-const arteController = require("../controllers/arteController");
-const authMiddleware = require('../middleware/authMiddleware');
-const jwtSrvice = require('../auth/jwtService');
 
 // Rota de upload de imagem
-router.post("/createArte",authMiddleware.authenticateToken, uploadMiddlewareArte.singleUpload, uploadMiddlewareArte.uploadToStorage, arteController.create);
+router.post('/createArte', authenticateToken, singleUpload, uploadToStorage, create);
 
-router.get("/artes",authMiddleware.authenticateToken, arteController.findAll);
+router.get('/artes', authenticateToken, findAll);
 
-router.put("/updatearte/:id",authMiddleware.authenticateToken, uploadMiddlewareArte.singleUpload, uploadMiddlewareArte.updateToStorage, arteController.update);
+router.put('/updatearte/:id', authenticateToken, singleUpload, updateToStorage, update);
 
+router.delete('/deletearte/:id', authenticateToken, remove);
 
-router.delete("/deletearte/:id",authMiddleware.authenticateToken, arteController.remove);
-
-module.exports = router;
+export default router;

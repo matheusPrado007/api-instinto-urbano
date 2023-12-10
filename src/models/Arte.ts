@@ -1,5 +1,6 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+import mongoose from 'mongoose';
+
+const { Schema } = mongoose;
 
 const ArteSchema = new Schema({
   nome_artista: { type: String, required: true },
@@ -11,4 +12,4 @@ const ArteSchema = new Schema({
   endereco: { type: String, required: true },
 });
 
-module.exports = mongoose.model("Arte", ArteSchema);
+export default mongoose.model('Arte', ArteSchema);

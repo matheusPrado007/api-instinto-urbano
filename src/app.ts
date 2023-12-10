@@ -1,26 +1,26 @@
-const expres = require("express");
-const cors = require('cors')
-const app = expres();
-require("./db");
+import express from 'express';
+import cors from 'cors';
+import './db';
 
-const routes = require("./routes/arteRoute");
-const routesUser = require("./routes/userRoute");
-require("dotenv").config();
+import arteRoutes from './routes/arteRoute';
+import userRoutes from './routes/userRoute';
+import dotenv from 'dotenv';
 
+dotenv.config();
 
-app.use(cors({origin: '*'}));
-app.use(expres.json());
-app.use(expres.urlencoded({ extended: true }));
+const app = express();
 
-app.use("/upload", routes);
-app.use("/upload", routesUser);
+app.use(cors({ origin: '*' }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+app.use('/upload', arteRoutes);
+app.use('/upload', userRoutes);
 
 const port = process.env.PORT || 3333;
-
 
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });
 
- module.exports = app;
+export default app;

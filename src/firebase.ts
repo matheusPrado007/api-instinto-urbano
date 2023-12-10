@@ -1,11 +1,11 @@
-const admin = require("firebase-admin");
-const serviceAccount = require("../config/api-rastro-urbano.json");
+import admin from 'firebase-admin';
+import serviceAccount from '../config/api-rastro-urbano.json';
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert(serviceAccount as object),
   storageBucket: 'gs://rastro-urbano.appspot.com', // Substitua pelo nome do seu bucket de armazenamento
 });
 
 const bucket = admin.storage().bucket();
 
-module.exports = bucket;
+export default bucket;

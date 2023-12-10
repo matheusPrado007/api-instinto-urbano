@@ -1,53 +1,51 @@
-const multer = require("multer");
-const { v4: uuidv4 } = require("uuid");
-const buckt = require("./firebase");
+import { v4 as uuidv4 } from 'uuid';
+import buckt from './firebase';
+import { Request, Response, NextFunction } from 'express';
+
+import multer from 'multer';
 const storage = multer.memoryStorage();
 
-//create
-
-const singleUpload = multer({
+// Criação de Imagem
+export const singleUpload = multer({
   storage: storage,
   limits: {
     fileSize: 5 * 1024 * 1024,
   },
-  fileFilter: (req: any, file: any, cb: any) => {
-
-    if (file.mimetype.startsWith("image/")) {
+  fileFilter: (request: Request, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
-      cb(new Error("O arquivo enviado não é uma imagem."));
+      cb(new Error('O arquivo enviado não é uma imagem.'));
     }
   },
 }).single('imagem');
 
-
-const multipleUpload = multer({
+export const multipleUpload = multer({
   storage: storage,
   limits: {
     fileSize: 5 * 1024 * 1024,
   },
-  fileFilter: (req: any, file: any, cb: any) => {
-
-    if (file.mimetype.startsWith("image/")) {
+  fileFilter: (request: Request, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
-      cb(new Error("O arquivo enviado não é uma imagem."));
+      cb(new Error('O arquivo enviado não é uma imagem.'));
     }
   },
-}).array('imagens', 2);  // 
+}).array('imagens', 2);
 
-const uploadToStorage = (req: any, res: any, next: any) => {
+export const uploadToStorage = (request: Request, response: Response, next: NextFunction) => {
   try {
     let files;
 
-    if (!req.file) {
-      return next()
+    if (!request.file) {
+      return next();
     }
 
-    const imagem = req.file;
+    const imagem: any = request.file;
 
     const nomeFoto = `${uuidv4()}.jpg`;
-    req.body.nomeFoto = nomeFoto;
+    request.body.nomeFoto = nomeFoto;
 
     const file = buckt.file(nomeFoto);
     const stream = file.createWriteStream({
@@ -56,40 +54,39 @@ const uploadToStorage = (req: any, res: any, next: any) => {
       },
     });
 
-    stream.on("error", (e: any) => {
+    stream.on('error', (e) => {
       console.log(e);
       next(e);
     });
 
-    stream.on("finish", async () => {
+    stream.on('finish', async () => {
       await file.makePublic();
       imagem.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeFoto}`;
-
       next();
     });
 
     stream.end(imagem.buffer);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Erro ao fazer upload da imagem para o Firebase Storage" });
+    response.status(500).json({ message: 'Erro ao fazer upload da imagem para o Firebase Storage' });
   }
 };
 
-const uploadToStorageMultiple = (req: any, res: any, next: any) => {
+export const uploadToStorageMultiple = (request: Request, response: Response, next: NextFunction) => {
   try {
-    let files;
+    let files: any;
 
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ error: "Nenhuma imagem foi enviada." });
+    if (!request.files || request.files.length === 0) {
+      return response.status(400).json({ error: 'Nenhuma imagem foi enviada.' });
     }
 
-    req.body.nomeArquivoPerfil = `${uuidv4()}.jpg`;
-    req.body.nomeArquivoCapa = `${uuidv4()}.jpg`;
+    request.body.nomeArquivoPerfil = `${uuidv4()}.jpg`;
+    request.body.nomeArquivoCapa = `${uuidv4()}.jpg`;
 
-    files = req.files;
+    files = request.files;
 
-    files.forEach((imagem: any, index: any) => {
-      const nomeArquivo = index === 0 ? req.body.nomeArquivoPerfil : req.body.nomeArquivoCapa;
+    files.forEach((imagem: any, index: number) => {
+      const nomeArquivo = index === 0 ? request.body.nomeArquivoPerfil : request.body.nomeArquivoCapa;
 
       const file = buckt.file(nomeArquivo);
       const stream = file.createWriteStream({
@@ -98,15 +95,14 @@ const uploadToStorageMultiple = (req: any, res: any, next: any) => {
         },
       });
 
-      stream.on("error", (e: any) => {
+      stream.on('error', (e) => {
         console.log(e);
         next(e);
       });
 
-      stream.on("finish", async () => {
+      stream.on('finish', async () => {
         await file.makePublic();
         imagem.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeArquivo}`;
-
       });
 
       stream.end(imagem.buffer);
@@ -115,24 +111,21 @@ const uploadToStorageMultiple = (req: any, res: any, next: any) => {
     next();
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Erro ao fazer upload das imagens para o Firebase Storage" });
+    response.status(500).json({ message: 'Erro ao fazer upload das imagens para o Firebase Storage' });
   }
 };
 
-// Update
-
-const updateToStorage = (req: any, res: any, next: any) => {
+// Atualização de Imagem
+export const updateToStorage = (request: Request, response: Response, next: NextFunction) => {
   try {
-    // Verifica se há uma imagem no corpo da requisição
-    if (!req.file) {
-      // Se não houver imagem, passe para o próximo middleware
+    if (!request.file) {
       return next();
     }
 
-    const imagem = req.file;
+    const imagem: any = request.file;
 
     const nomeFoto = `${uuidv4()}.jpg`;
-    req.body.nomeFoto = nomeFoto;
+    request.body.nomeFoto = nomeFoto;
 
     const file = buckt.file(nomeFoto);
     const stream = file.createWriteStream({
@@ -141,37 +134,34 @@ const updateToStorage = (req: any, res: any, next: any) => {
       },
     });
 
-    stream.on("error", (e: any) => {
+    stream.on('error', (e) => {
       console.log(e);
       next(e);
     });
 
-    stream.on("finish", async () => {
+    stream.on('finish', async () => {
       await file.makePublic();
       imagem.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeFoto}`;
-
       next();
     });
 
     stream.end(imagem.buffer);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Erro ao fazer upload da imagem para o Firebase Storage" });
+    response.status(500).json({ message: 'Erro ao fazer upload da imagem para o Firebase Storage' });
   }
 };
 
-
-/////////
-const multipleUploadStorage = multer({
+export const multipleUploadStorage = multer({
   storage: storage,
   limits: {
     fileSize: 5 * 1024 * 1024,
   },
-  fileFilter: (req: any, file: any, cb: any) => {
-    if (file.mimetype.startsWith("image/")) {
+  fileFilter: (request: Request, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
-      cb(new Error("O arquivo enviado não é uma imagem."));
+      cb(new Error('O arquivo enviado não é uma imagem.'));
     }
   },
 }).fields([
@@ -179,22 +169,20 @@ const multipleUploadStorage = multer({
   { name: 'foto_capa', maxCount: 1 },
 ]);
 
-
-
-const updateToStorageMultiple = async (req: any, res: any, next: any) => {
+export const updateToStorageMultiple = async (request: Request, response: Response, next: NextFunction) => {
   try {
-    if (!req.files || req.files.length === 0) {
+    if (!request.files || request.files.length === 0) {
       return next();
     }
 
-    const files = req.files;
+    const files: any = request.files;
 
     // Verifique e processe foto_perfil
     if (files['foto_perfil']) {
       const imagemPerfil = files['foto_perfil'][0];
       const nomeArquivoPerfil = `${uuidv4()}.jpg`;
 
-      req.body.nomeArquivoPerfil = nomeArquivoPerfil;
+      request.body.nomeArquivoPerfil = nomeArquivoPerfil;
 
       const filePerfil = buckt.file(nomeArquivoPerfil);
       const streamPerfil = filePerfil.createWriteStream({
@@ -203,12 +191,12 @@ const updateToStorageMultiple = async (req: any, res: any, next: any) => {
         },
       });
 
-      streamPerfil.on("error", (e: any) => {
+      streamPerfil.on('error', (e) => {
         console.log(e);
         next(e);
       });
 
-      streamPerfil.on("finish", async () => {
+      streamPerfil.on('finish', async () => {
         await filePerfil.makePublic();
         imagemPerfil.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeArquivoPerfil}`;
       });
@@ -221,7 +209,7 @@ const updateToStorageMultiple = async (req: any, res: any, next: any) => {
       const imagemCapa = files['foto_capa'][0];
       const nomeArquivoCapa = `${uuidv4()}.jpg`;
 
-      req.body.nomeArquivoCapa = nomeArquivoCapa;
+      request.body.nomeArquivoCapa = nomeArquivoCapa;
 
       const fileCapa = buckt.file(nomeArquivoCapa);
       const streamCapa = fileCapa.createWriteStream({
@@ -230,12 +218,12 @@ const updateToStorageMultiple = async (req: any, res: any, next: any) => {
         },
       });
 
-      streamCapa.on("error", (e: any) => {
+      streamCapa.on('error', (e) => {
         console.log(e);
         next(e);
       });
 
-      streamCapa.on("finish", async () => {
+      streamCapa.on('finish', async () => {
         await fileCapa.makePublic();
         imagemCapa.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeArquivoCapa}`;
       });
@@ -246,16 +234,12 @@ const updateToStorageMultiple = async (req: any, res: any, next: any) => {
     next();
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Erro ao fazer upload das imagens para o Firebase Storage" });
+    response.status(500).json({ message: 'Erro ao fazer upload das imagens para o Firebase Storage' });
   }
 };
 
-
-
-
-//Delete
-
-const deleteFromStorage = async (nomeArquivo: any) => {
+// Exclusão de Imagem
+export const deleteFromStorage = async (nomeArquivo: string) => {
   try {
     const file = buckt.file(nomeArquivo);
 
@@ -270,13 +254,4 @@ const deleteFromStorage = async (nomeArquivo: any) => {
     console.error(`Erro ao excluir o arquivo ${nomeArquivo} do Firebase Storage:`, error);
     throw error;
   }
-};
-
-
-module.exports = {
-  singleUpload, multipleUpload,
-  uploadToStorage, deleteFromStorage,
-  uploadToStorageMultiple, updateToStorage,
-  updateToStorageMultiple,
-  multipleUploadStorage
 };

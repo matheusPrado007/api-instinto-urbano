@@ -1,16 +1,15 @@
-const mongoos = require("mongoose");
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
-require("dotenv").config();
+dotenv.config();
 
-mongoos.set("strictQuery", true);
+mongoose.set('strictQuery', true);
+
+async function main() {
+  await mongoose.connect(process.env.MONGO_URL as string);
+  console.log('Conectado com sucesso!');
+}
 
 main().catch((err) => console.log(err));
 
-async function main() {
-  await mongoos.connect(
-    process.env.MONGO_URL
-  )
-  console.log("Conectado com sucesso!");
-}
-
-module.exports = main;
+export default main;
