@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import buckt from './firebase';
+import buckt from '../firebase';
 import { Request, Response, NextFunction } from 'express';
 
 import multer from 'multer';

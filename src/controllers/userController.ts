@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { Request, Response, NextFunction } from 'express';
 import ExtendedRequest from '../types/UserTypes';
 import User from '../models/User';
-import { deleteFromStorage } from '../uploadMiddleware';
+import { deleteFromStorage } from '../middleware/uploadMiddleware';
 import { generateToken } from '../auth/jwtService';
 
 export const create = async (req: Request, res: Response) => {

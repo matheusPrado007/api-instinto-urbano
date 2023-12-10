@@ -1,6 +1,6 @@
 import Arte from "../models/Arte";
 import { Request, Response } from 'express';
-import { deleteFromStorage } from "../uploadMiddleware";
+import { deleteFromStorage } from "../middleware/uploadMiddleware";
 
 export const create = async (req: Request, res: Response) => {
   try {

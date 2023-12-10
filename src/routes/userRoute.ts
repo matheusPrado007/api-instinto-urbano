@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateToStorageMultiple, multipleUploadStorage } from '../uploadMiddleware';
+import { updateToStorageMultiple, multipleUploadStorage } from '../middleware/uploadMiddleware';
 import { create, findAll, remove, update, loginPost } from '../controllers/userController';
 import { authenticateToken } from '../middleware/authMiddleware';
 

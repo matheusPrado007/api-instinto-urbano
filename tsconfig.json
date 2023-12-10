@@ -9,6 +9,6 @@
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist"  // ou outro diretório de saída desejado
   },
-  "include": ["src/*.ts"],
+  "include": ["src/*.ts", "src/middleware/uploadMiddleware.ts"],
   "exclude": ["node_modules"]
 }

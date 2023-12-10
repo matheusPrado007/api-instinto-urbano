@@ -1,5 +1,5 @@
 import express from 'express';
-import { singleUpload, updateToStorage, uploadToStorage } from '../uploadMiddleware';
+import { singleUpload, updateToStorage, uploadToStorage } from '../middleware/uploadMiddleware';
 import { create, findAll, remove, update } from '../controllers/arteController';
 import { authenticateToken } from '../middleware/authMiddleware';
 
