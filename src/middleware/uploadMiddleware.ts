@@ -239,8 +239,12 @@ export const updateToStorageMultiple = async (request: Request, response: Respon
 };
 
 // Exclusão de Imagem
-export const deleteFromStorage = async (nomeArquivo: string) => {
+export const deleteFromStorage = async (nomeArquivo: string | undefined) => {
   try {
+    if (nomeArquivo === undefined) {
+      console.log('Nome de arquivo não fornecido. Nada será excluído.');
+      return;
+    }
     const file = buckt.file(nomeArquivo);
 
     const [exists] = await file.exists();

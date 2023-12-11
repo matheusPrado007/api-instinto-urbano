@@ -36,7 +36,7 @@ export const create = async (req: Request, res: Response) => {
 
 export const update = async (req: ExtendedRequest, res: Response, next: NextFunction) => {
   try {
-    const userId = req.params.id;
+    const userId = req.params?.id;
     const user: any = await User.findById(userId);
 
     if (!user) {
@@ -71,8 +71,10 @@ export const update = async (req: ExtendedRequest, res: Response, next: NextFunc
     await user.save();
 
     res.json({ message: 'Usuário atualizado com sucesso' });
-  } catch (err) {
+  } catch (err: any) {
     console.error('Erro ao atualizar o usuário:', err);
+    console.error('Detalhes do erro:', err.stack); // Adicione esta linha para obter o stack trace completo
+
     res.status(500).json({ message: 'Erro ao atualizar o usuário' });
   }
 };
