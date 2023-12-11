@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { Request, Response, NextFunction } from 'express';
 import ExtendedRequest from '../types/UserTypes';
 import User from '../models/User';
@@ -13,7 +13,7 @@ export const create = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Nomes dos arquivos não fornecidos.' });
     }
 
-    const hashedSenha = await bcrypt.hash(senha, 10);
+    const hashedSenha = await bcrypt.hash(senha, 10) as string;
 
     const user = new User({
       username,
