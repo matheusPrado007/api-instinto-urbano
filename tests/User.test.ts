@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import { Request, Response, NextFunction } from 'express';
-import { create, update, remove } from './../src/controllers/userController';
+import { create, update, remove, findAll } from './../src/controllers/userController';
 import User from '../src/models/User';
 import ExtendedRequest from '../src/types/UserTypes';
 import { deleteFromStorage } from '../src/middleware/uploadMiddleware';
@@ -193,3 +193,54 @@ describe('User Controller - remove', () => {
         expect(res.json).toHaveBeenCalledWith({ message: 'Usuário não encontrado' });
     });
 });
+
+describe('User Controller - findAll', () => {
+    let req: Request;
+    let res: Response;
+  
+    beforeEach(() => {
+      req = {} as Request;
+      res = {
+        json: jest.fn(),
+        status: jest.fn().mockReturnThis(),
+      } as unknown as Response;
+    });
+  
+    it('deve retornar usuários corretamente', async () => {
+      const mockUsers = [{
+        _id: 'someId',
+            username: 'userUser',
+            email: 'user@example.com',
+            senha: 'userPassword',
+            descricao_perfil: 'user description',
+            foto_perfil: 'existingProfile.jpg',
+            foto_capa: 'existingCover.jpg',
+    } , {
+        __id: 'someId',
+        username: 'userUser2',
+        email: 'user@example2.com',
+        senha: 'userPassword2',
+        descricao_perfil: 'user description2',
+        foto_perfil: 'existingProfile2.jpg',
+        foto_capa: 'existingCover2.jpg',
+    }];
+
+
+
+    jest.spyOn(User, 'find').mockResolvedValueOnce(mockUsers);
+  
+      await findAll(req, res);
+  
+      expect(res.json).toHaveBeenCalledWith(mockUsers);
+    });
+  
+    it('deve lidar com erros ao buscar usuários', async () => {
+      const errorMessage = 'Erro ao buscar os usuários.';
+      (User.find as jest.Mock).mockRejectedValueOnce(new Error(errorMessage));
+  
+      await findAll(req, res);
+  
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({ message: errorMessage });
+    });
+  });
