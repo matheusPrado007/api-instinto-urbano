@@ -68,6 +68,18 @@ describe('User Controller - create', () => {
 });
 
 describe('User Controller - update', () => {
+    beforeEach(() => {
+        req = { body: {} };
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        };
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
     it('deve atualizar um usuário com sucesso', async () => {
         jest.spyOn(User, 'findById').mockResolvedValueOnce({
             _id: 'someId',
@@ -137,6 +149,18 @@ describe('User Controller - update', () => {
 });
 
 describe('User Controller - remove', () => {
+    beforeEach(() => {
+        req = { body: {} };
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        };
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
     it('deve remover arquivos', async () => {
 
         const user = {
