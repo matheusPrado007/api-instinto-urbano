@@ -54,3 +54,104 @@ describe('Arte Controller - create', () => {
         expect(res.json).toHaveBeenCalledWith({ message: 'Nenhuma imagem foi enviada.' });
     });
 });
+
+describe('Arte Controller - update', () => {
+    beforeEach(() => {
+        req = { body: {} };
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn(),
+        };
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
+    it('deve atualizar um usuário com sucesso', async () => {
+        jest.spyOn(Arte, 'findById').mockResolvedValueOnce({
+            _id: "someId",
+            nome_artista: 'h.p.lovecract',
+            nome: 'call of cthulhu',
+            foto: 'arte.jpg',
+            descricao: 'livro do lovecraft',
+            uf: 'state',
+            cidade: 'state',
+            endereco: 'state',
+            save: jest.fn(),
+        } as any);
+
+        req.body = {
+            nome_artista: 'h.p',
+            nome: 'Montanhas da Loucura',
+        };
+
+
+        await update(req as Request, res as Response);
+
+
+        expect(res.json).toHaveBeenCalledWith({ message: "Update realizado" });
+    });
+
+
+    it('deve retornar um erro se o usuário não for encontrado', async () => {
+        // Simulando User.findById para retornar null
+        jest.spyOn(Arte, 'findById').mockResolvedValueOnce(null);
+
+        await update(req as Request, res as Response);
+
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.json).toHaveBeenCalledWith({ message: "Arte não encontrada" });
+    });
+
+
+    it('deve lidar com atualizações de dados', async () => {
+        jest.spyOn(Arte, 'findById').mockResolvedValueOnce({
+            _id: "someId",
+            nome_artista: 'h.p.lovecract',
+            nome: 'call of cthulhu',
+            foto: 'arte.jpg',
+            descricao: 'livro do lovecraft',
+            uf: 'state',
+            cidade: 'state',
+            endereco: 'state',
+            save: jest.fn(),
+        } as any);
+
+        req.body = {
+            username: 'updatedUser',
+        };
+
+        await update(req as Request, res as Response);
+        expect(res.json).toHaveBeenCalledWith({ message: "Update realizado" });
+    });
+
+    it('deve lidar com id inexistente', async () => {
+        jest.spyOn(Arte, 'findById').mockResolvedValueOnce(null);
+
+        await update(req as Request, res as Response);
+        expect(res.json).toHaveBeenCalledWith({ message: 'Arte não encontrada' });
+    });
+
+    it('deve lidar com atualizações de arquivos', async () => {
+        jest.spyOn(Arte, 'findById').mockResolvedValueOnce({
+            _id: "someId",
+            nome_artista: 'h.p.lovecract',
+            nome: 'call of cthulhu',
+            foto: 'arte.jpg',
+            descricao: 'livro do lovecraft',
+            uf: 'state',
+            cidade: 'state',
+            endereco: 'state',
+            save: jest.fn(),
+        } as any);
+
+        req.body = {
+            nomeFoto: 'foto',
+        };
+
+        await update(req as Request, res as Response);
+        expect(res.json).toHaveBeenCalledWith({ message: "Imagem atualizada com sucesso" });
+
+    });
+});

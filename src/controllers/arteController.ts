@@ -31,21 +31,18 @@ export const create = async (req: Request, res: Response) => {
 
 export const update = async (req: Request, res: Response) => {
   try {
-    const arteId = req.params.id;
+    const arteId = req.params?.id;
     const arte: any = await Arte.findById(arteId);
-    console.log('tipo da arte', typeof arte);
     
 
     if (!arte) {
-      return res.status(404).json({ message: "Imagem não encontrada" });
+      return res.status(404).json({ message: "Arte não encontrada" });
     }
 
     if (req.body.nomeFoto) {
-      // Excluir a imagem antiga
       await deleteFromStorage(arte.foto);
       arte.foto = req.body.nomeFoto;
 
-      // Salvar as alterações
       await arte.save();
 
       return res.json({ message: "Imagem atualizada com sucesso" });
@@ -59,7 +56,6 @@ export const update = async (req: Request, res: Response) => {
       }
     });
 
-    // Salvar as alterações
     await arte.save();
 
     res.json({ message: "Update realizado" });
