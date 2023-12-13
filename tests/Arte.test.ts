@@ -152,6 +152,5 @@ describe('Arte Controller - update', () => {
 
         await update(req as Request, res as Response);
         expect(res.json).toHaveBeenCalledWith({ message: "Imagem atualizada com sucesso" });
-
     });
 });

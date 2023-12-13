@@ -108,7 +108,6 @@ export const findAll = async (req: Request, res: Response) => {
 
 export const loginPost = async (req: Request, res: Response) => {
   const { email, senha } = req.body;
-  console.log(senha);
 
   try {
     const user: any = await User.findOne({ email });
@@ -118,18 +117,18 @@ export const loginPost = async (req: Request, res: Response) => {
     }
 
     if (typeof user.senha !== 'string') {
-      return res.status(401).json({ message: 'Credenciais inválidas.' });
+      return res.status(401).json({ message: 'Credenciais inválidas typeof não é string.' });
     }
 
     const senhaValida = await bcrypt.compare(senha, user.senha);
 
     if (!senhaValida) {
-      return res.status(401).json({ message: 'Credenciais inválidas. invalida' });
+      return res.status(401).json({ message: 'Credenciais inválidas, erro bcript' });
     }
 
     const token = generateToken(user._id);
 
-    res.json({ token });
+    res.status(201).json({ token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Erro interno do servidor.' });

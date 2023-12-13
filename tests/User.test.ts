@@ -1,9 +1,11 @@
 import * as bcrypt from 'bcrypt';
 import { Request, Response, NextFunction } from 'express';
-import { create, update, remove, findAll } from './../src/controllers/userController';
+import { create, update, remove, findAll, loginPost } from './../src/controllers/userController';
 import User from '../src/models/User';
 import ExtendedRequest from '../src/types/UserTypes';
 import { deleteFromStorage } from '../src/middleware/uploadMiddleware';
+import { generateToken } from '../src/auth/jwtService';
+
 
 
 jest.mock('bcrypt');
@@ -244,3 +246,120 @@ describe('User Controller - findAll', () => {
       expect(res.json).toHaveBeenCalledWith({ message: errorMessage });
     });
   });
+
+
+//   describe('loginPost function', () => {
+//     beforeEach(() => {
+//         req = { body: {} };
+//         res = {
+//             status: jest.fn().mockReturnThis(),
+//             json: jest.fn(),
+//         };
+//     });
+
+//     afterEach(() => {
+//         jest.restoreAllMocks();
+//     });
+
+  
+//     it('should handle internal server error', async () => {
+//         const req = { body: { email: 'user@example.com', senha: 'senha123' } } as Request;
+//         const res = { status: jest.fn(), json: jest.fn() } as unknown as Response;
+    
+//         (bcrypt.compare as jest.Mock).mockRejectedValue(new Error('Simulated bcrypt error'));
+    
+//         jest.spyOn(User, 'findOne').mockResolvedValueOnce(null);
+    
+//         try {
+//           await loginPost(req, res);
+    
+//           expect(res.status).toHaveBeenCalledWith(500);
+    
+//           expect(res.json).toHaveBeenCalledWith({ message: 'Erro interno do servidor.' });
+//         } catch (error) {
+//           console.error(error);
+//         }
+//       });
+//     });
+
+
+    describe('loginPost', () => {
+        it('deve retornar um token válido para credenciais corretas', async () => {
+          const req = {
+            body: {
+              email: 'test@example.com',
+              senha: 'senha123',
+            },
+          } as Request;
+      
+          const res = {
+            status: jest.fn(() => res),
+            json: jest.fn(),
+          } as unknown as Response;
+      
+          // Mock do usuário retornado pelo findOne
+          const mockUser = {
+            _id: 'mocked-id',
+            senha: await bcrypt.hash('senha123', 10),
+          };
+      
+          jest.spyOn(User, 'findOne').mockResolvedValueOnce(mockUser);
+          (bcrypt.compare as jest.Mock).mockResolvedValueOnce(true);
+      
+          await loginPost(req, res);
+      
+          expect(res.status).toHaveBeenCalledWith(201);
+          expect(res.json).toHaveBeenCalledWith({ token: expect.any(String) });
+        });
+
+        it('deve retornar erro findOne', async () => {
+            const req = {
+              body: {},
+            } as Request;
+        
+            const res = {
+              status: jest.fn(() => res),
+              json: jest.fn(),
+            } as unknown as Response;
+        
+            // Mock do usuário retornado pelo findOne
+            const mockUser = {
+              _id: 'mocked-id',
+              senha: await bcrypt.hash('senha123', 10),
+            };
+        
+            jest.spyOn(User, 'findOne').mockResolvedValueOnce(null);
+            (bcrypt.compare as jest.Mock).mockResolvedValueOnce(true);
+        
+            await loginPost(req, res);
+        
+            expect(res.status).toHaveBeenCalledWith(401);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Credenciais inválidas. user' });
+          });
+      
+          it('deve retornar erro string na senha', async () => {
+            const req = {
+              body: {},
+            } as Request;
+        
+            const res = {
+              status: jest.fn(() => res),
+              json: jest.fn(),
+            } as unknown as Response;
+        
+            // Mock do usuário retornado pelo findOne
+            const mockUser = {
+              _id: 'mocked-id',
+              senha: 1,
+            };
+        
+            jest.spyOn(User, 'findOne').mockResolvedValueOnce(mockUser);
+            (bcrypt.compare as jest.Mock).mockResolvedValueOnce(null);
+        
+            await loginPost(req, res);
+        
+            expect(res.status).toHaveBeenCalledWith(401);
+            expect(res.json).toHaveBeenCalledWith({ message: 'Credenciais inválidas typeof não é string.'  });
+          });
+      
+      });
