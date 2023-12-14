@@ -4,7 +4,7 @@ import { create, update, remove, findAll, loginPost } from './../src/controllers
 import User from '../src/models/User';
 import ExtendedRequest from '../src/types/UserTypes';
 import { deleteFromStorage } from '../src/middleware/uploadMiddleware';
-import { generateToken } from '../src/auth/jwtService';
+import { generateTokens } from '../src/auth/jwtService';
 
 
 
@@ -324,8 +324,11 @@ describe('loginPost', () => {
     await loginPost(req, res);
 
     expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith({ token: expect.any(String) });
-  });
+    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({
+      accessToken: expect.any(String),
+      refreshToken: expect.any(String)
+    }));
+    });
 
   it('deve retornar erro findOne', async () => {
     const req = {
@@ -349,7 +352,7 @@ describe('loginPost', () => {
     await loginPost(req, res);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Credenciais inválidas. user' });
+    expect(res.json).toHaveBeenCalledWith({ message: 'Credenciais inválidas. Usuário não encontrado.' });
   });
 
   it('deve retornar erro string na senha', async () => {
@@ -374,7 +377,7 @@ describe('loginPost', () => {
     await loginPost(req, res);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Credenciais inválidas typeof não é string.' });
+    expect(res.json).toHaveBeenCalledWith({ message: 'Credenciais inválidas. Tipo de senha inválido.' });
   });
 
   it('deve retornar erro interno do servidor em caso de exceção', async () => {
@@ -397,7 +400,7 @@ describe('loginPost', () => {
 
     // Verifique se o status 500 e a mensagem de erro interno do servidor foram enviados
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Erro interno do servidor, loginPost.' });
+    expect(res.json).toHaveBeenCalledWith({ message: 'Erro interno do servidor durante o login.' });
   });
 
 });

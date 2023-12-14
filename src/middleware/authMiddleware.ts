@@ -1,8 +1,7 @@
 import { Response, NextFunction } from 'express';
-import { verifyToken } from '../auth/jwtService';
-import { ExtendedRequest, DecodedToken } from '../types/MidldlewareTypes'
-
-
+import { verifyAccessToken, verifyRefreshToken } from '../auth/jwtService';
+import { ExtendedRequest, DecodedToken } from '../types/MidldlewareTypes';
+import { generateTokens } from '../auth/jwtService'; // Importe a função generateTokens
 
 const authenticateToken = async (
   req: ExtendedRequest,
@@ -17,13 +16,26 @@ const authenticateToken = async (
   }
 
   try {
-    const decoded = verifyToken(token) as DecodedToken;
+    let decoded: DecodedToken;
+
+
+    if (token.startsWith('Bearer ')) {
+      const accessToken = token.slice(7);
+      decoded = verifyAccessToken(accessToken) as DecodedToken;
+    }
+    else {
+      decoded = verifyRefreshToken(token) as DecodedToken;
+
+      const newTokens = generateTokens(decoded.userId);
+
+      res.locals.newTokens = newTokens;
+    }
 
     req.userId = decoded.userId;
 
     next();
   } catch (error) {
-    res.status(400).send('Invalid token.');
+    res.status(400).send('Token inválido.');
   }
 };
 

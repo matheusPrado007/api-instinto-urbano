@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import ExtendedRequest from '../types/UserTypes';
 import User from '../models/User';
 import { deleteFromStorage } from '../middleware/uploadMiddleware';
-import { generateToken } from '../auth/jwtService';
+import { generateTokens  } from '../auth/jwtService';
 
 export const create = async (req: Request, res: Response) => {
   try {
@@ -101,6 +101,7 @@ export const findAll = async (req: Request, res: Response) => {
   }
 };
 
+
 export const loginPost = async (req: Request, res: Response) => {
   const { email, senha } = req.body;
 
@@ -108,23 +109,26 @@ export const loginPost = async (req: Request, res: Response) => {
     const user: any = await User.findOne({ email });
 
     if (!user) {
-      return res.status(401).json({ message: 'Credenciais inválidas. user' });
+      return res.status(401).json({ message: 'Credenciais inválidas. Usuário não encontrado.' });
     }
 
     if (typeof user.senha !== 'string') {
-      return res.status(401).json({ message: 'Credenciais inválidas typeof não é string.' });
+      return res.status(401).json({ message: 'Credenciais inválidas. Tipo de senha inválido.' });
     }
 
     const senhaValida = await bcrypt.compare(senha, user.senha);
 
     if (!senhaValida) {
-      return res.status(401).json({ message: 'Credenciais inválidas, erro bcript' });
+      return res.status(401).json({ message: 'Credenciais inválidas. Senha incorreta.' });
     }
 
-    const token = generateToken(user._id);
+    // Gera token de acesso e token de atualização
+    const { accessToken, refreshToken } = generateTokens(user._id);
 
-    res.status(201).json({ token });
+    res.status(201).json({ accessToken, refreshToken });
   } catch (error) {
-    res.status(500).json({ message: 'Erro interno do servidor, loginPost.' });
+    res.status(500).json({ message: 'Erro interno do servidor durante o login.' });
   }
 };
+
+
