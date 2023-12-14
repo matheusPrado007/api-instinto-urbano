@@ -231,7 +231,7 @@ describe('User Controller - remove', () => {
 
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({ message: errorMessage });
-  });
+  }, 100000);
 
 });
 

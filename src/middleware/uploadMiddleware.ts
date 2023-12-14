@@ -20,26 +20,12 @@ export const singleUpload = multer({
   },
 }).single('imagem');
 
-export const multipleUpload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024,
-  },
-  fileFilter: (request: Request, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
-      cb(null, true);
-    } else {
-      cb(new Error('O arquivo enviado não é uma imagem.'));
-    }
-  },
-}).array('imagens', 2);
 
 export const uploadToStorage = (request: Request, response: Response, next: NextFunction) => {
   try {
-    let files;
 
     if (!request.file) {
-      return next();
+      next()
     }
 
     const imagem: any = request.file;
@@ -67,7 +53,6 @@ export const uploadToStorage = (request: Request, response: Response, next: Next
 
     stream.end(imagem.buffer);
   } catch (error) {
-    console.error(error);
     response.status(500).json({ message: 'Erro ao fazer upload da imagem para o Firebase Storage' });
   }
 };
@@ -110,7 +95,6 @@ export const uploadToStorageMultiple = (request: Request, response: Response, ne
 
     next();
   } catch (error) {
-    console.error(error);
     response.status(500).json({ message: 'Erro ao fazer upload das imagens para o Firebase Storage' });
   }
 };
@@ -147,7 +131,6 @@ export const updateToStorage = (request: Request, response: Response, next: Next
 
     stream.end(imagem.buffer);
   } catch (error) {
-    console.error(error);
     response.status(500).json({ message: 'Erro ao fazer upload da imagem para o Firebase Storage' });
   }
 };
@@ -233,7 +216,6 @@ export const updateToStorageMultiple = async (request: Request, response: Respon
 
     next();
   } catch (error) {
-    console.error(error);
     response.status(500).json({ message: 'Erro ao fazer upload das imagens para o Firebase Storage' });
   }
 };

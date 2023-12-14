@@ -19,12 +19,10 @@ const authenticateToken = async (
   try {
     const decoded = verifyToken(token) as DecodedToken;
 
-    // Adicione informações do token decodificado ao request
     req.userId = decoded.userId;
 
     next();
   } catch (error) {
-    console.error('Erro na verificação do token:', error);
     res.status(400).send('Invalid token.');
   }
 };
