@@ -24,14 +24,16 @@ export const create = async (req: Request, res: Response) => {
     await arte.save();
     res.status(201).json(arte);
   } catch (err) {
-    console.error("Erro ao salvar a imagem:", err);
     res.status(500).json({ message: "Erro interno ao salvar a imagem." });
   }
 };
 
 export const update = async (req: Request, res: Response) => {
   try {
-    const arteId = req.params?.id;
+    const arteId = req.params.id;
+    if (!arteId) {
+      return res.status(404).json({ message: "id de params não informado" });
+    }
     const arte: any = await Arte.findById(arteId);
     
 
@@ -60,7 +62,6 @@ export const update = async (req: Request, res: Response) => {
 
     res.json({ message: "Update realizado" });
   } catch (err) {
-    console.error("Erro ao atualizar a imagem:", err);
     res.status(500).json({ message: "Erro ao atualizar a imagem" });
   }
 };
@@ -71,7 +72,7 @@ export const remove = async (req: Request, res: Response) => {
     const arte = await Arte.findById(arteId);
 
     if (!arte) {
-      return res.status(404).json({ message: "Imagem não encontrada" });
+      return res.status(404).json({ message: "Arte não encontrada" });
     }
 
     // Excluir a imagem do Firebase Storage
@@ -80,10 +81,9 @@ export const remove = async (req: Request, res: Response) => {
     // Remover a arte do banco de dados
     await arte.remove();
 
-    res.json({ message: "Imagem removida com sucesso" });
+    res.json({ message: "Arte removida com sucesso" });
   } catch (err) {
-    console.error("Erro ao remover a imagem:", err);
-    res.status(500).json({ message: "Erro ao remover a imagem" });
+    res.status(500).json({ message: "Erro ao remover a Arte" });
   }
 };
 
@@ -92,6 +92,6 @@ export const findAll = async (req: Request, res: Response) => {
     const arte = await Arte.find();
     res.json(arte);
   } catch (err) {
-    res.status(500).json({ message: "Erro ao buscar as imagens." });
+    res.status(500).json({ message: "Erro ao buscar as artes." });
   }
 };
