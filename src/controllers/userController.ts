@@ -29,7 +29,6 @@ export const create = async (req: Request, res: Response) => {
     await user.save();
     res.status(201).json(user);
   } catch (err) {
-    console.error('Erro ao salvar as imagens:', err);
     res.status(500).json({ message: 'Erro interno ao salvar as imagens.' });
   }
 };
@@ -72,9 +71,6 @@ export const update = async (req: ExtendedRequest, res: Response, next: NextFunc
 
     res.json({ message: 'Usuário atualizado com sucesso' });
   } catch (err: any) {
-    console.error('Erro ao atualizar o usuário:', err);
-    console.error('Detalhes do erro:', err.stack); // Adicione esta linha para obter o stack trace completo
-
     res.status(500).json({ message: 'Erro ao atualizar o usuário' });
   }
 };
@@ -92,7 +88,6 @@ export const remove = async (req: Request, res: Response) => {
     await user.remove();
     res.json({ message: 'Usuário removido com sucesso' });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: 'Erro ao remover o usuário' });
   }
 };
@@ -130,7 +125,6 @@ export const loginPost = async (req: Request, res: Response) => {
 
     res.status(201).json({ token });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Erro interno do servidor.' });
+    res.status(500).json({ message: 'Erro interno do servidor, loginPost.' });
   }
 };
