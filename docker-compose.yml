@@ -10,9 +10,11 @@ services:
       - .:/usr/src/app
     environment:
       NODE_ENV: development
+      ACCESS_TOKEN_SECRET: yourAccessTokenSecret
+      REFRESH_TOKEN_SECRET: yourRefreshTokenSecret
     depends_on:
       - mongo
   mongo:
     image: mongo
     ports:
-      - "27018:27017"  # Mudando a porta do host para 27018
+      - "27018:27017"

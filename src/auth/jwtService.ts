@@ -1,8 +1,11 @@
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const generateTokens = (userId: string) => {
-  const accessToken = jwt.sign({ userId }, 'batata123', { expiresIn: '1h' });
-  const refreshToken = jwt.sign({ userId }, 'refreshSecret', { expiresIn: '7d' }); // Um tempo mais longo para o refresh token
+  const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '1h' });
+  const refreshToken = jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET as string, { expiresIn: '7d' }); // Um tempo mais longo para o refresh token
 
   return { accessToken, refreshToken };
 };

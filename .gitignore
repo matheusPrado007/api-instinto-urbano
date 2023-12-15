@@ -4,3 +4,5 @@ coverage/
 # *.json
 *.html
 *.info
+
+.env
