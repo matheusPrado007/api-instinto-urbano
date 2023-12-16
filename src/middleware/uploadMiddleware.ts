@@ -61,47 +61,7 @@ export const uploadToStorage = (request: Request, response: Response, next: Next
   }
 };
 
-export const uploadToStorageMultiple = (request: Request, response: Response, next: NextFunction) => {
-  try {
-    let files: any;
 
-    if (!request.files || request.files.length === 0) {
-      return response.status(400).json({ error: 'Nenhuma imagem foi enviada.' });
-    }
-
-    request.body.nomeArquivoPerfil = `${uuidv4()}.jpg`;
-    request.body.nomeArquivoCapa = `${uuidv4()}.jpg`;
-
-    files = request.files;
-
-    files.forEach((imagem: any, index: number) => {
-      const nomeArquivo = index === 0 ? request.body.nomeArquivoPerfil : request.body.nomeArquivoCapa;
-
-      const file = buckt.file(nomeArquivo);
-      const stream = file.createWriteStream({
-        metadata: {
-          contentType: imagem.mimetype,
-        },
-      });
-
-      stream.on('error', (e) => {
-        console.log(e);
-        next(e);
-      });
-
-      stream.on('finish', async () => {
-        await file.makePublic();
-        imagem.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeArquivo}`;
-      });
-
-      stream.end(imagem.buffer);
-    });
-
-    next();
-  } catch (error) {
-    response.status(500).json({ message: 'Erro ao fazer upload das imagens para o Firebase Storage' });
-  }
-};
 
 // Atualização de Imagem
 export const updateToStorage = (request: Request, response: Response, next: NextFunction) => {
@@ -167,7 +127,8 @@ export const updateToStorageMultiple = async (request: Request, response: Respon
     // Verifique e processe foto_perfil
     if (files['foto_perfil']) {
       const imagemPerfil = files['foto_perfil'][0];
-      const nomeArquivoPerfil = `${uuidv4()}.jpg`;
+      const uuid = `${uuidv4()}.jpg`;
+      const nomeArquivoPerfil = `https://storage.googleapis.com/${buckt.name}/${uuid}`
 
       request.body.nomeArquivoPerfil = nomeArquivoPerfil;
 
@@ -191,10 +152,12 @@ export const updateToStorageMultiple = async (request: Request, response: Respon
       streamPerfil.end(imagemPerfil.buffer);
     }
 
-    // Verifique e processe foto_capa
     if (files['foto_capa']) {
       const imagemCapa = files['foto_capa'][0];
-      const nomeArquivoCapa = `${uuidv4()}.jpg`;
+      const uuid = `${uuidv4()}.jpg`;
+
+      const nomeArquivoCapa = `https://storage.googleapis.com/${buckt.name}/${uuid}`;
+      
 
       request.body.nomeArquivoCapa = nomeArquivoCapa;
 
