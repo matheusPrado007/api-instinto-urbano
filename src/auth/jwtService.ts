@@ -11,11 +11,11 @@ const generateTokens = (userId: string) => {
 };
 
 const verifyAccessToken = (token: string) => {
-  return jwt.verify(token, 'batata123');
+  return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string);
 };
 
 const verifyRefreshToken = (token: string) => {
-  return jwt.verify(token, 'refreshSecret');
+  return jwt.verify(token, process.env.REFRESH_TOKEN_SECRET as string);
 };
 
 export { generateTokens, verifyAccessToken, verifyRefreshToken };

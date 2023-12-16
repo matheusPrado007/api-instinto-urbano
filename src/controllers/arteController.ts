@@ -5,16 +5,19 @@ import { deleteFromStorage } from "../middleware/uploadMiddleware";
 export const create = async (req: Request, res: Response) => {
   try {
     const { nome_artista, nome, uf, cidade, descricao, endereco } = req.body;
-    const nomeDoArquivoFirebase = req.body.nomeFoto;
 
-    if (!nomeDoArquivoFirebase) {
+    const nomeDoArquivoFirebase: any = req.file;
+    console.log(nomeDoArquivoFirebase.firebaseUrl);
+    
+
+    if (!nomeDoArquivoFirebase.firebaseUrl) {
       return res.status(400).json({ message: "Nenhuma imagem foi enviada." });
     }
 
     const arte = new Arte({
       nome_artista,
       nome,
-      foto: nomeDoArquivoFirebase,
+      foto: nomeDoArquivoFirebase.firebaseUrl,
       descricao,
       uf,
       cidade,

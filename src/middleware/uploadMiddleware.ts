@@ -26,14 +26,15 @@ export const uploadToStorage = (request: Request, response: Response, next: Next
 
     if (!request.file) {
       next()
+      return;
     }
 
     const imagem: any = request.file;
 
     const nomeFoto = `${uuidv4()}.jpg`;
-    request.body.nomeFoto = nomeFoto;
 
     const file = buckt.file(nomeFoto);
+
     const stream = file.createWriteStream({
       metadata: {
         contentType: imagem.mimetype,
@@ -47,7 +48,10 @@ export const uploadToStorage = (request: Request, response: Response, next: Next
 
     stream.on('finish', async () => {
       await file.makePublic();
-      imagem.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeFoto}`;
+
+       imagem.firebaseUrl = `https://storage.googleapis.com/${buckt.name}/${nomeFoto}`;
+       console.log('URL do Firebase:', imagem.firebaseUrl); 
+
       next();
     });
 
