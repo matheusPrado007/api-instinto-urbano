@@ -34,8 +34,8 @@ const authenticateToken = async (
     req.userId = decoded.userId;
 
     next();
-  } catch (error) {
-    res.status(400).send('Token inválido.');
+  } catch (error: any) {
+    res.status(400).send(`Token inválido. Detalhes: ${error.message}`);
   }
 };
 
