@@ -9,8 +9,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-
-app.use(cors({ origin: 'http://localhost:3000'  }));
+app.use(cors({ origin: '*' }));
+const corsOptions = {
+  origin: ['http://localhost:3000', 'http://192.168.2.121:3000'],
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
