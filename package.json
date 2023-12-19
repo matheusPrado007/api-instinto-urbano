@@ -7,7 +7,7 @@
         "dev": "ts-node src/app.ts",
         "test": "jest",
         "coverage": "nyc npm test",
-        "build": "echo 'Iniciando compilação TypeScript' && tsc -p tsconfig.json && echo 'Compilação TypeScript concluída'"
+        "start": "tsc && node src/app.js"
     },
     "keywords": [],
     "author": "",
