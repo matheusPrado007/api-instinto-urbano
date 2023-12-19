@@ -1,5 +1,4 @@
-# Use uma imagem Node.js mais leve
-FROM node:14-alpine
+FROM node:14
 
 WORKDIR /usr/src/app
 
@@ -11,4 +10,5 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["node", "src/app.js"]
+CMD [ "node src/app.ts"]
+
