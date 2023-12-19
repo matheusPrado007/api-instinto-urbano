@@ -10,5 +10,5 @@ COPY . .
 
 EXPOSE 3000
 
-CMD [ "node src/app.ts"]
+CMD [ "node /api-rastro-urbano/src/app.ts"]
 
