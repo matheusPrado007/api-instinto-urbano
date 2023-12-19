@@ -8,7 +8,9 @@ RUN npm install --production
 
 COPY . .
 
+RUN npm run build
+
 EXPOSE 3000
 
-CMD [ "npm run dev"]
+CMD ["node", "dist/src/app.js"]
 
