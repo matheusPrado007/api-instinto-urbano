@@ -6,7 +6,8 @@
     "scripts": {
         "dev": "ts-node src/app.ts",
         "test": "jest",
-        "coverage": "nyc npm test"
+        "coverage": "nyc npm test",
+        "build": "tsc -p tsconfig.json"
     },
     "keywords": [],
     "author": "",
