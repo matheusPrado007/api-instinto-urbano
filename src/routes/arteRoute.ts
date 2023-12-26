@@ -8,7 +8,7 @@ const router = express.Router();
 // Rota de upload de imagem
 router.post('/createArte', authenticateToken, singleUpload, uploadToStorage, create);
 
-router.get('/artes', authenticateToken, findAll);
+router.get('/artes', findAll);
 
 router.put('/updatearte/:id', authenticateToken, singleUpload, uploadToStorage, update);
 

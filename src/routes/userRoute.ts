@@ -9,7 +9,7 @@ routerUser.post('/login', loginPost);
 // Rota de upload de imagem
 routerUser.post('/createUser', multipleUploadStorage, updateToStorageMultiple, create);
 
-routerUser.get('/users', authenticateToken, findAll);
+routerUser.get('/users', findAll);
 
 routerUser.put('/updateUser/:id', multipleUploadStorage, updateToStorageMultiple, update);
 
