@@ -48,7 +48,6 @@ export const update = async (req: ExtendedRequest, res: Response, next: NextFunc
       Object.keys(files).forEach((fieldname: string) => {
         const imagem = files[fieldname][0];
 
-        // Lógica para processar cada imagem
         if (fieldname === 'foto_perfil') {
           deleteFromStorage(user.foto_perfil);
           user.foto_perfil = req.body.nomeArquivoPerfil;
@@ -61,19 +60,24 @@ export const update = async (req: ExtendedRequest, res: Response, next: NextFunc
 
     const camposAtualizados = ['username', 'email', 'senha', 'descricao_perfil'];
 
-    camposAtualizados.forEach((campo) => {
-      if (req.body[campo] !== undefined) {
+    await Promise.all(camposAtualizados.map(async (campo) => {
+      if (campo === 'senha' && req.body[campo]) {
+        const hashedSenha = await bcrypt.hash(req.body[campo], 10) as string;
+        user[campo] = hashedSenha;
+      } else if (req.body[campo] !== undefined) {
         user[campo] = req.body[campo];
       }
-    });
+    }));
 
     await user.save();
 
     res.json({ message: 'Usuário atualizado com sucesso' });
   } catch (err: any) {
+    console.error(err);
     res.status(500).json({ message: 'Erro ao atualizar o usuário' });
   }
 };
+
 
 export const remove = async (req: Request, res: Response) => {
   try {
