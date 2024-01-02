@@ -8,7 +8,10 @@ const UserSchema = new Schema({
   senha: { type: String, required: true },
   descricao_perfil: { type: String, required: true },
   foto_perfil: { type: String, required: true },
-  foto_capa: { type: String, required: true },
+  foto_capa: { type: String, required: false },
+  linkedin: { type: String, required: false },
+  instagram: { type: String, required: false },
+  administrador: { type: Boolean, required: true }
 });
 
 export default mongoose.model("User", UserSchema);
