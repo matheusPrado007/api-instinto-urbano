@@ -11,7 +11,8 @@ const UserSchema = new Schema({
   foto_capa: { type: String, required: false },
   linkedin: { type: String, required: false },
   instagram: { type: String, required: false },
-  administrador: { type: Boolean, required: true }
+  administrador: { type: Boolean, required: true },
+  descricao_curta: { type: String, required: true, maxlength: 50 }
 });
 
 export default mongoose.model("User", UserSchema);
