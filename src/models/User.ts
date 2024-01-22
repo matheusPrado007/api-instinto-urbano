@@ -12,7 +12,7 @@ const UserSchema = new Schema({
   linkedin: { type: String, required: false },
   instagram: { type: String, required: false },
   administrador: { type: Boolean, required: true },
-  descricao_curta: { type: String, required: true, maxlength: 50 }
+  descricao_curta: { type: String, required: true, maxlength: 100 }
 });
 
 export default mongoose.model("User", UserSchema);
