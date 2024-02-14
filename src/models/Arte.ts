@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const ArteSchema = new Schema({
+  username: { type: String, required: true },
   nome_artista: { type: String, required: true },
   nome: { type: String, required: true },
   foto: { type: String, required: true },
