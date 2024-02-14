@@ -7,7 +7,7 @@ import { generateTokens  } from '../auth/jwtService';
 
 export const create = async (req: Request, res: Response) => {
   try {
-    const { username, email, senha, descricao_perfil, nomeArquivoPerfil, nomeArquivoCapa, linkedin, instagram, administrador, descricao_curta } = req.body;
+    const { name ,username, email, senha, descricao_perfil, nomeArquivoPerfil, nomeArquivoCapa, linkedin, instagram, administrador, descricao_curta } = req.body;
 
     if (!nomeArquivoPerfil || !nomeArquivoCapa) {
       return res.status(400).json({ message: 'Nomes dos arquivos não fornecidos.' });
@@ -16,6 +16,7 @@ export const create = async (req: Request, res: Response) => {
     const hashedSenha = await bcrypt.hash(senha, 10) as string;
 
     const user = new User({
+      name,
       username,
       email,
       senha: hashedSenha,
@@ -64,7 +65,7 @@ export const update = async (req: ExtendedRequest, res: Response, next: NextFunc
 
     const camposAtualizados = [
       'username', 'email', 'senha', 'descricao_perfil', 
-    'linkedin', 'instagram', 'administrador', 'descricao_curta'
+    'linkedin', 'instagram', 'administrador', 'descricao_curta', 'name'
   ];
 
     await Promise.all(camposAtualizados.map(async (campo) => {
