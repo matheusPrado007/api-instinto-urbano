@@ -4,7 +4,7 @@ import { deleteFromStorage } from "../middleware/uploadMiddleware";
 
 export const create = async (req: Request, res: Response) => {
   try {
-    const { username , nome_artista, nome, uf, cidade, descricao, endereco } = req.body;
+    const { username , nome_artista, nome_livro, descricao, livro } = req.body;
 
     const nomeDoArquivoFirebase: any = req.file;
     console.log(nomeDoArquivoFirebase.firebaseUrl);
@@ -17,12 +17,11 @@ export const create = async (req: Request, res: Response) => {
     const arte = new Arte({
       username,
       nome_artista,
-      nome,
+      nome_livro,
       foto: nomeDoArquivoFirebase.firebaseUrl,
       descricao,
-      uf,
-      cidade,
-      endereco,
+      livro,
+
     });
 
     await arte.save();
@@ -54,7 +53,7 @@ export const update = async (req: Request, res: Response) => {
       return res.json({ message: "Imagem atualizada com sucesso" });
     }
 
-    const camposAtualizados = ["nome_artista", "nome", "uf", "cidade", "descricao", "endereco", "username"];
+    const camposAtualizados = ["nome_artista", "nome_livro", "livro", "descricao", "username"];
 
     camposAtualizados.forEach((campo) => {
       if (req.body[campo]) {

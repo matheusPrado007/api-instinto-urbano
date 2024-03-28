@@ -3,11 +3,11 @@ import { Request, Response, NextFunction } from 'express';
 import ExtendedRequest from '../types/UserTypes';
 import User from '../models/User';
 import { deleteFromStorage } from '../middleware/uploadMiddleware';
-import { generateTokens  } from '../auth/jwtService';
+import { generateTokens } from '../auth/jwtService';
 
 export const create = async (req: Request, res: Response) => {
   try {
-    const { name ,username, email, senha, descricao_perfil, nomeArquivoPerfil, nomeArquivoCapa, linkedin, instagram, administrador, descricao_curta } = req.body;
+    const { name, username, email, senha, descricao_perfil, nomeArquivoPerfil, nomeArquivoCapa, linkedin, instagram, administrador, descricao_curta } = req.body;
 
     if (!nomeArquivoPerfil || !nomeArquivoCapa) {
       return res.status(400).json({ message: 'Nomes dos arquivos não fornecidos.' });
@@ -64,9 +64,9 @@ export const update = async (req: ExtendedRequest, res: Response, next: NextFunc
     }
 
     const camposAtualizados = [
-      'username', 'email', 'senha', 'descricao_perfil', 
-    'linkedin', 'instagram', 'administrador', 'descricao_curta', 'name'
-  ];
+      'username', 'email', 'senha', 'descricao_perfil',
+      'linkedin', 'instagram', 'administrador', 'descricao_curta', 'name'
+    ];
 
     await Promise.all(camposAtualizados.map(async (campo) => {
       if (campo === 'senha' && req.body[campo]) {
@@ -117,6 +117,7 @@ export const findAll = async (req: Request, res: Response) => {
 export const loginPost = async (req: Request, res: Response) => {
   const { email, senha } = req.body;
 
+
   try {
     const user: any = await User.findOne({ email });
 
@@ -134,7 +135,6 @@ export const loginPost = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Credenciais inválidas. Senha incorreta.' });
     }
 
-    // Gera token de acesso e token de atualização
     const { accessToken, refreshToken } = generateTokens(user._id);
 
     res.status(201).json({ accessToken, refreshToken });

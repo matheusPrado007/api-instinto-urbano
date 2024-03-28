@@ -17,20 +17,19 @@ const Arte_1 = __importDefault(require("../models/Arte"));
 const uploadMiddleware_1 = require("../middleware/uploadMiddleware");
 const create = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { nome_artista, nome, uf, cidade, descricao, endereco } = req.body;
+        const { username, nome_artista, nome_livro, descricao, livro } = req.body;
         const nomeDoArquivoFirebase = req.file;
         console.log(nomeDoArquivoFirebase.firebaseUrl);
         if (!nomeDoArquivoFirebase.firebaseUrl) {
             return res.status(400).json({ message: "Nenhuma imagem foi enviada." });
         }
         const arte = new Arte_1.default({
+            username,
             nome_artista,
-            nome,
+            nome_livro,
             foto: nomeDoArquivoFirebase.firebaseUrl,
             descricao,
-            uf,
-            cidade,
-            endereco,
+            livro,
         });
         yield arte.save();
         res.status(201).json(arte);
@@ -56,7 +55,7 @@ const update = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             yield arte.save();
             return res.json({ message: "Imagem atualizada com sucesso" });
         }
-        const camposAtualizados = ["nome_artista", "nome", "uf", "cidade", "descricao", "endereco"];
+        const camposAtualizados = ["nome_artista", "nome_livro", "livro", "descricao", "username"];
         camposAtualizados.forEach((campo) => {
             if (req.body[campo]) {
                 arte[campo] = req.body[campo];
